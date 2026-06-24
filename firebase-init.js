@@ -23,12 +23,12 @@
   // تهيئة قاعدة البيانات
   const db = getFirestore(app);
 
-  // جعل قاعدة البيانات والدوال متاحة لملف script.js لكي يتمكن من استخدامها
+  // تعريف المتغيرات التي ينتظرها ملف script.js لكي يعمل
   window.db = db;
   window.firestore = {
     doc, collection, getDoc, getDocs, addDoc, updateDoc, deleteDoc, setDoc, serverTimestamp, onSnapshot
   };
 
-  // إرسال إشعار للمتجر والآدمن بأن قاعدة البيانات أصبحت جاهزة للعمل
+  // إرسال إشعار للمتجر والآدمن بأن قاعدة البيانات أصبحت جاهزة
   window.dispatchEvent(new Event("firebaseReady"));
 </script>
