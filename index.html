@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shop Control Panel</title>
+    <title>etsyShopIraq | لوحة التحكم</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
       rel="stylesheet"
@@ -11,650 +11,201 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <!-- زر العودة للمتجر -->
+    <a href="/" class="dev-nav-btn">العودة للمتجر</a>
+
     <div class="admin-container">
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-          <h2>Control Panel</h2>
+          <h2>لوحة التحكم</h2>
         </div>
         <ul class="sidebar-menu">
-          <li class="active" data-tab="orders">Orders</li>
-          <li data-tab="accepted-orders">Accepted Orders</li>
-          <li data-tab="products">Products</li>
-          <li data-tab="categories">Categories</li>
-          <li data-tab="banners">Banners</li>
-          <li data-tab="settings">Shipping Settings</li>
+          <li class="active" data-tab="orders">الطلبات الجديدة</li>
+          <li data-tab="accepted-orders">الطلبات المنجزة</li>
+          <li data-tab="products">إدارة المنتجات</li>
+          <li data-tab="categories">فئات المتجر</li>
+          <li data-tab="banners">اللافتات (Banners)</li>
+          <li data-tab="settings">إعدادات الشحن</li>
         </ul>
       </aside>
 
       <main class="main-content">
         <header class="top-header">
           <button id="toggle-sidebar" class="toggle-btn">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="3" y1="12" x2="21" y2="12"></line>
               <line x1="3" y1="6" x2="21" y2="6"></line>
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          <h3>Pending Orders</h3>
+          <h3>الطلبات قيد الانتظار</h3>
         </header>
 
+        <!-- نافذة الطلبات -->
         <div class="tab-content active" id="orders-tab">
           <div class="orders-grid" id="orders-container">
-            <p>Loading orders ...</p>
+            <p style="text-align:center; color: var(--text-muted); width: 100%;">جاري تحميل الطلبات...</p>
           </div>
         </div>
 
+        <!-- نافذة الطلبات المنجزة -->
         <div class="tab-content" id="accepted-orders-tab">
           <div class="orders-grid" id="accepted-orders-container">
-            <p>Loading orders ...</p>
+            <p style="text-align:center; color: var(--text-muted); width: 100%;">جاري تحميل الطلبات...</p>
           </div>
         </div>
 
+        <!-- نافذة المنتجات -->
         <div class="tab-content" id="products-tab">
-          <div
-            class="products-header"
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 1.5rem;
-            "
-          >
-            <h3>Products Management</h3>
-            <button
-              class="btn btn-accept"
-              id="add-product-btn"
-              style="width: auto"
-            >
-              Add New Product
-            </button>
+          <div class="products-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3>إدارة المنتجات</h3>
+            <button class="btn btn-accept" id="add-product-btn" style="width: auto">إضافة منتج جديد</button>
           </div>
 
-          <div
-            class="add-product-form"
-            id="add-product-form"
-            style="
-              display: none;
-              background: #fff;
-              padding: 1.5rem;
-              border-radius: 12px;
-              margin-bottom: 2rem;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-              border: 1px solid var(--border);
-            "
-          >
-            <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              Product Details
-            </h4>
-            <div
-              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
-            >
+          <div class="add-product-form" id="add-product-form" style="display: none; background: #fff; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border);">
+            <h4 style="margin-bottom: 1rem; color: var(--primary)">تفاصيل المنتج الجديد</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Product Name</label
-                >
-                <input
-                  type="text"
-                  id="new-product-name"
-                  placeholder="Product Name ..."
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">اسم المنتج</label>
+                <input type="text" id="new-product-name" placeholder="أدخل اسم المنتج..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit;">
               </div>
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Price (IQD)</label
-                >
-                <input
-                  type="number"
-                  id="new-product-price"
-                  placeholder="Example: 25000"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">السعر (دينار عراقي)</label>
+                <input type="number" id="new-product-price" placeholder="مثال: 25000" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit;">
               </div>
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Category</label
-                >
-                <select
-                  id="new-product-category"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                    background: white;
-                  "
-                >
-                  <option value="fashion">Fashion</option>
-                  <option value="electronics">Electronics</option>
-                  <option value="home">Home</option>
-                  <option value="beauty">Beauty</option>
-                  <option value="books">Books</option>
-                </select>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">الفئة</label>
+                <select id="new-product-category" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; background: white;"></select>
               </div>
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Product Image</label
-                >
-                <input
-                  type="file"
-                  id="new-product-image"
-                  accept="image/*"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                    background: white;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">صورة المنتج</label>
+                <input type="file" id="new-product-image" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; background: white;">
               </div>
               <div class="input-group" style="grid-column: 1 / -1;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Product Description</label>
-                <textarea id="new-product-desc" placeholder="Enter full item description and details here..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; resize: vertical; min-height: 80px;"></textarea>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">وصف المنتج</label>
+                <textarea id="new-product-desc" placeholder="أدخل وصفاً تفصيلياً للمنتج هنا..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; resize: vertical; min-height: 80px;"></textarea>
               </div>
             </div>
-            <button
-              class="btn btn-accept"
-              id="save-product-btn"
-              style="margin-top: 1.5rem; width: 100%"
-            >
-              Save Product
-            </button>
+            <button class="btn btn-accept" id="save-product-btn" style="margin-top: 1.5rem; width: 100%">حفظ المنتج</button>
           </div>
 
-          <div class="orders-grid" id="admin-products-container">
-            </div>
+          <div class="orders-grid" id="admin-products-container"></div>
 
-          <div
-            class="add-product-form"
-            id="edit-product-form"
-            style="
-              display: none;
-              background: #fff;
-              padding: 1.5rem;
-              border-radius: 12px;
-              margin-top: 2rem;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-              border: 1px solid var(--border);
-            "
-          >
-            <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              Edit Product
-            </h4>
+          <!-- نافذة تعديل المنتج -->
+          <div class="add-product-form" id="edit-product-form" style="display: none; background: #fff; padding: 1.5rem; border-radius: 12px; margin-top: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border);">
+            <h4 style="margin-bottom: 1rem; color: var(--primary)">تعديل بيانات المنتج</h4>
             <input type="hidden" id="edit-product-id" />
-            <div
-              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
-            >
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Product Name</label
-                >
-                <input
-                  type="text"
-                  id="edit-product-name"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">اسم المنتج</label>
+                <input type="text" id="edit-product-name" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit;">
               </div>
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Price (IQD)</label
-                >
-                <input
-                  type="number"
-                  id="edit-product-price"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">السعر (دينار عراقي)</label>
+                <input type="number" id="edit-product-price" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit;">
               </div>
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Category</label
-                >
-                <select
-                  id="edit-product-category"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                    background: white;
-                  "
-                >
-                  <option value="fashion">Fashion</option>
-                  <option value="electronics">Electronics</option>
-                  <option value="home">Home</option>
-                  <option value="beauty">Beauty</option>
-                  <option value="books">Books</option>
-                </select>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">الفئة</label>
+                <select id="edit-product-category" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; background: white;"></select>
               </div>
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Change Image (Optional)</label
-                >
-                <input
-                  type="file"
-                  id="edit-product-image"
-                  accept="image/*"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                    background: white;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">تغيير الصورة (اختياري)</label>
+                <input type="file" id="edit-product-image" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; background: white;">
               </div>
               <div class="input-group" style="grid-column: 1 / -1;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Product Description</label>
-                <textarea id="edit-product-desc" placeholder="Update item description..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; resize: vertical; min-height: 80px;"></textarea>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">وصف المنتج</label>
+                <textarea id="edit-product-desc" placeholder="تحديث وصف المنتج..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; resize: vertical; min-height: 80px;"></textarea>
               </div>
             </div>
             <div style="display: flex; gap: 1rem; margin-top: 1.5rem">
-              <button
-                class="btn btn-accept"
-                id="update-product-btn"
-                style="flex: 1"
-              >
-                Save edits
-              </button>
-              <button
-                class="btn btn-reject"
-                id="cancel-edit-btn"
-                style="flex: 1"
-              >
-                Cancel
-              </button>
+              <button class="btn btn-accept" id="update-product-btn" style="flex: 1">حفظ التعديلات</button>
+              <button class="btn btn-reject" id="cancel-edit-btn" style="flex: 1">إلغاء</button>
             </div>
           </div>
         </div>
 
+        <!-- نافذة الفئات -->
         <div class="tab-content" id="categories-tab">
-          <div
-            class="categories-header"
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 1.5rem;
-            "
-          >
-            <h3>Category Management</h3>
-            <button
-              class="btn btn-accept"
-              id="add-category-btn"
-              style="width: auto"
-            >
-              Add new category
-            </button>
+          <div class="categories-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3>إدارة الفئات</h3>
+            <button class="btn btn-accept" id="add-category-btn" style="width: auto">إضافة فئة جديدة</button>
           </div>
 
-          <div
-            class="add-category-form"
-            id="add-category-form"
-            style="
-              display: none;
-              background: #fff;
-              padding: 1.5rem;
-              border-radius: 12px;
-              margin-bottom: 2rem;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-              border: 1px solid var(--border);
-            "
-          >
-            <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              New category information
-            </h4>
+          <div class="add-category-form" id="add-category-form" style="display: none; background: #fff; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border);">
+            <h4 style="margin-bottom: 1rem; color: var(--primary)">معلومات الفئة الجديدة</h4>
             <div style="display: grid; grid-template-columns: 1fr; gap: 1rem">
               <input type="hidden" id="new-category-id" />
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Category Name</label
-                >
-                <input
-                  type="text"
-                  id="new-category-name"
-                  placeholder="Category Name ..."
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">اسم الفئة</label>
+                <input type="text" id="new-category-name" placeholder="مثال: طابعات 3D..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit;">
               </div>
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Category Icon</label
-                >
-                <input
-                  type="file"
-                  id="new-category-image"
-                  accept="image/*"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                    background: white;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">أيقونة/صورة الفئة</label>
+                <input type="file" id="new-category-image" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; background: white;">
               </div>
             </div>
-            <button
-              class="btn btn-accept"
-              id="save-category-btn"
-              style="margin-top: 1.5rem; width: 100%"
-            >
-              Save category
-            </button>
+            <button class="btn btn-accept" id="save-category-btn" style="margin-top: 1.5rem; width: 100%">حفظ الفئة</button>
           </div>
 
-          <div class="orders-grid" id="admin-categories-container">
-            </div>
+          <div class="orders-grid" id="admin-categories-container"></div>
 
-          <div
-            class="add-category-form"
-            id="edit-category-form"
-            style="
-              display: none;
-              background: #fff;
-              padding: 1.5rem;
-              border-radius: 12px;
-              margin-top: 2rem;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-              border: 1px solid var(--border);
-            "
-          >
-            <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              Edit Category
-            </h4>
+          <!-- نافذة تعديل الفئة -->
+          <div class="add-category-form" id="edit-category-form" style="display: none; background: #fff; padding: 1.5rem; border-radius: 12px; margin-top: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border);">
+            <h4 style="margin-bottom: 1rem; color: var(--primary)">تعديل بيانات الفئة</h4>
             <input type="hidden" id="edit-category-original-id" />
             <input type="hidden" id="edit-category-id" />
             <div style="display: grid; grid-template-columns: 1fr; gap: 1rem">
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Category Name</label
-                >
-                <input
-                  type="text"
-                  id="edit-category-name"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">اسم الفئة</label>
+                <input type="text" id="edit-category-name" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit;">
               </div>
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Change category icon (optional)</label
-                >
-                <input
-                  type="file"
-                  id="edit-category-image"
-                  accept="image/*"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                    background: white;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">تغيير صورة الفئة (اختياري)</label>
+                <input type="file" id="edit-category-image" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; background: white;">
               </div>
             </div>
             <div style="display: flex; gap: 1rem; margin-top: 1.5rem">
-              <button
-                class="btn btn-accept"
-                id="update-category-btn"
-                style="flex: 1"
-              >
-                Save edits
-              </button>
-              <button
-                class="btn btn-reject"
-                id="cancel-category-edit-btn"
-                style="flex: 1"
-              >
-                Cancel
-              </button>
+              <button class="btn btn-accept" id="update-category-btn" style="flex: 1">حفظ التعديلات</button>
+              <button class="btn btn-reject" id="cancel-category-edit-btn" style="flex: 1">إلغاء</button>
             </div>
           </div>
         </div>
 
+        <!-- نافذة البنرات -->
         <div class="tab-content" id="banners-tab">
-          <div
-            class="banners-header"
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 1.5rem;
-            "
-          >
-            <h3>Banners Management</h3>
-            <button
-              class="btn btn-accept"
-              id="add-banner-btn"
-              style="width: auto"
-            >
-              Add New Banner
-            </button>
+          <div class="banners-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3>إدارة اللافتات (البنرات)</h3>
+            <button class="btn btn-accept" id="add-banner-btn" style="width: auto">إضافة لافتة جديدة</button>
           </div>
 
-          <div
-            class="add-banner-form"
-            id="add-banner-form"
-            style="
-              display: none;
-              background: #fff;
-              padding: 1.5rem;
-              border-radius: 12px;
-              margin-bottom: 2rem;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-              border: 1px solid var(--border);
-            "
-          >
-            <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              New Banner Image
-            </h4>
-            <p
-              style="
-                color: var(--text-muted);
-                margin-bottom: 1rem;
-                font-size: 0.9rem;
-              "
-            >
-              It is better to choose a horizontal image to match the store layout.
+          <div class="add-banner-form" id="add-banner-form" style="display: none; background: #fff; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border);">
+            <h4 style="margin-bottom: 1rem; color: var(--primary)">صورة اللافتة الجديدة</h4>
+            <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+              يُفضل اختيار صورة أفقية (مستطيلة) لتناسب تصميم واجهة المتجر.
             </p>
             <div style="display: grid; grid-template-columns: 1fr; gap: 1rem">
               <div class="input-group">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Banner Image</label
-                >
-                <input
-                  type="file"
-                  id="new-banner-image"
-                  accept="image/*"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                    background: white;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">الصورة المرفوعة</label>
+                <input type="file" id="new-banner-image" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; background: white;">
               </div>
             </div>
-            <button
-              class="btn btn-accept"
-              id="save-banner-btn"
-              style="margin-top: 1.5rem; width: 100%"
-            >
-              Save Banner
-            </button>
+            <button class="btn btn-accept" id="save-banner-btn" style="margin-top: 1.5rem; width: 100%">حفظ اللافتة</button>
           </div>
 
-          <div
-            class="banners-grid"
-            id="admin-banners-container"
-            style="display: grid; gap: 1.5rem; grid-template-columns: 1fr"
-          >
-            </div>
+          <div class="banners-grid" id="admin-banners-container" style="display: grid; gap: 1.5rem; grid-template-columns: 1fr"></div>
         </div>
 
+        <!-- نافذة الإعدادات -->
         <div class="tab-content" id="settings-tab">
-          <h3>Settings</h3>
-          <div
-            class="delivery-cost-settings"
-            style="
-              background: #fff;
-              padding: 1.5rem;
-              border-radius: 12px;
-              margin-bottom: 2rem;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-              border: 1px solid var(--border);
-            "
-          >
-            <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              Shipping Settings
-            </h4>
+          <h3>إعدادات النظام</h3>
+          <div class="delivery-cost-settings" style="background: #fff; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border);">
+            <h4 style="margin-bottom: 1rem; color: var(--primary)">إعدادات تكلفة الشحن الافتراضية</h4>
             <div style="display: flex; gap: 1rem; align-items: flex-end">
               <div class="input-group" style="flex: 1">
-                <label
-                  style="
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                  "
-                  >Delivery Fees (IQD)</label
-                >
-                <input
-                  type="number"
-                  id="delivery-cost-input"
-                  placeholder="Example: 5000"
-                  style="
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    font-family: inherit;
-                  "
-                />
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">أجور التوصيل (دينار عراقي)</label>
+                <input type="number" id="delivery-cost-input" placeholder="مثال: 5000" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit;">
               </div>
-              <button
-                class="btn btn-accept"
-                id="save-delivery-cost-btn"
-                style="width: auto; height: 100%"
-              >
-                Save Shipping fees
-              </button>
+              <button class="btn btn-accept" id="save-delivery-cost-btn" style="width: auto; height: 100%">حفظ الإعدادات</button>
             </div>
           </div>
         </div>
