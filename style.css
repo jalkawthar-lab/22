@@ -1,11 +1,17 @@
 :root {
-  --bg-color: #f8fafc;
-  --sidebar-bg: #1e293b;
-  --sidebar-text: #f8fafc;
-  --sidebar-hover: #334155;
-  --primary: #4fd1d5;
-  --white: #ffffff;
-  --text-main: #0f172a;
+  /* Matching your storefront exactly */
+  --bg-color: #f0fdf4;       /* أخضر فاتح */
+  --bg-category: #e0f2fe;    /* أزرق فاتح */
+  --bg-product: #fce7f3;     /* وردي فاتح */
+  --surface: #ffffff;
+  
+  --sidebar-bg: #ffffff;
+  --sidebar-text: #1e293b;
+  --sidebar-hover: #f0fdf4;
+  
+  --primary: #ff6a00;
+  --primary-hover: #e05d00;
+  --text-main: #1e293b;
   --text-muted: #64748b;
   --border: #e2e8f0;
 }
@@ -23,14 +29,15 @@ body {
   display: flex;
   height: 100vh;
   overflow: hidden;
+  direction: rtl; /* Enforce Right to Left orientation */
 }
 
 /* Navigation button to return to the store */
 .dev-nav-btn {
   position: fixed;
   top: 10px;
-  left: 10px;
-  background: #ef4444;
+  right: 10px; /* Switched to right for RTL */
+  background: var(--primary);
   color: white;
   padding: 6px 12px;
   font-size: 14px;
@@ -43,7 +50,7 @@ body {
 }
 
 .dev-nav-btn:hover {
-  background: #dc2626;
+  background: var(--primary-hover);
 }
 
 .admin-container {
@@ -58,17 +65,19 @@ body {
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease;
+  border-left: 1px solid var(--border); /* Changed to border-left for RTL */
 }
 
 .sidebar-header {
   padding: 1.5rem;
-  border-bottom: 1px solid var(--sidebar-hover);
+  border-bottom: 1px solid var(--border);
   text-align: center;
 }
 
 .sidebar-header h2 {
   color: var(--primary);
   font-size: 1.5rem;
+  font-weight: 800;
 }
 
 .sidebar-menu {
@@ -81,17 +90,18 @@ body {
   padding: 1rem 1.5rem;
   cursor: pointer;
   transition: all 0.2s;
-  border-left: 4px solid transparent;
-  font-weight: 600;
+  border-right: 4px solid transparent; /* Changed to border-right for RTL */
+  font-weight: 700;
 }
 
 .sidebar-menu li:hover {
   background: var(--sidebar-hover);
+  color: var(--primary);
 }
 
 .sidebar-menu li.active {
   background: var(--sidebar-hover);
-  border-left-color: var(--primary);
+  border-right-color: var(--primary); /* Changed to border-right */
   color: var(--primary);
 }
 
@@ -104,7 +114,7 @@ body {
 }
 
 .top-header {
-  background: var(--white);
+  background: var(--surface);
   padding: 1rem 2rem;
   display: flex;
   align-items: center;
@@ -113,12 +123,17 @@ body {
   z-index: 10;
 }
 
+.top-header h3 {
+  font-weight: 800;
+  color: var(--text-main);
+}
+
 .toggle-btn {
   background: none;
   border: none;
   cursor: pointer;
   color: var(--text-main);
-  display: none; /* Hidden on large desktop viewports */
+  display: none; 
 }
 
 .tab-content {
@@ -132,17 +147,11 @@ body {
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Orders Styling */
+/* Grid Framework */
 .orders-grid {
   display: grid;
   gap: 1.5rem;
@@ -150,13 +159,23 @@ body {
 }
 
 .order-card {
-  background: var(--white);
+  background: var(--surface);
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
+}
+
+/* Applying specific pastel colors from your request */
+#admin-products-container .order-card {
+  background: var(--bg-product);
+  border-color: #fbcfe8;
+}
+#admin-categories-container .order-card {
+  background: var(--bg-category);
+  border-color: #bae6fd;
 }
 
 .order-header {
@@ -181,23 +200,16 @@ body {
 
 .order-customer {
   margin-bottom: 1rem;
-  background: var(--bg-color);
+  background: var(--surface);
+  border: 1px solid var(--border);
   padding: 1rem;
   border-radius: 8px;
   font-size: 0.95rem;
 }
 
-.order-customer strong {
-  color: var(--text-main);
-}
-
-.order-customer div {
-  margin-bottom: 0.5rem;
-}
-
-.order-customer div:last-child {
-  margin-bottom: 0;
-}
+.order-customer strong { color: var(--text-main); }
+.order-customer div { margin-bottom: 0.5rem; }
+.order-customer div:last-child { margin-bottom: 0; }
 
 .order-items {
   margin-bottom: 1rem;
@@ -207,22 +219,24 @@ body {
 .order-item {
   display: flex;
   justify-content: space-between;
-  background: var(--bg-color);
+  background: var(--surface);
+  border: 1px solid var(--border);
   padding: 0.5rem 1rem;
   margin-bottom: 0.5rem;
   border-radius: 6px;
   font-size: 0.9rem;
   color: var(--text-main);
+  font-weight: 600;
 }
 
 .order-total {
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--primary);
   margin-bottom: 1.5rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
   font-size: 1.1rem;
-  text-align: right; /* Aligned right to match English reading order layouts */
+  text-align: left; /* Flips text position appropriately for RTL layouts */
 }
 
 .order-actions {
@@ -241,12 +255,10 @@ body {
   transition: opacity 0.2s;
 }
 
-.btn:hover {
-  opacity: 0.9;
-}
+.btn:hover { opacity: 0.9; }
 
 .btn-accept {
-  background: #10b981;
+  background: var(--primary);
   color: white;
 }
 
@@ -256,25 +268,22 @@ body {
 }
 
 @media (max-width: 768px) {
-  .toggle-btn {
-    display: block;
-  }
+  .toggle-btn { display: block; }
 
   .sidebar {
     position: fixed;
-    left: 0;
+    right: 0; /* Aligned to right edge for RTL Arabic layout */
+    left: auto;
     top: 0;
     bottom: 0;
-    transform: translateX(-100%); /* Adjusted to slide out nicely on English ltr layouts */
+    transform: translateX(100%); 
     z-index: 100;
   }
 
   .sidebar.open {
     transform: translateX(0);
-    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
   }
 
-  .orders-grid {
-    grid-template-columns: 1fr;
-  }
+  .orders-grid { grid-template-columns: 1fr; }
 }
