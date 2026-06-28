@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>etsyShopIraq | لوحة التحكم</title>
-    <!-- 1. Added Manifest Link for App Installation -->
+    <!-- ربط ملف الـ Manifest لتثبيت التطبيق -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff6a00">
     
@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- زر العودة للمتجر -->
-    <a href="/" class="dev-nav-btn">العودة للمتجر</a>
+    <!-- زر العودة للمتجر الرئيسي -->
+    <a href="https://jalkawthar-lab.github.io/" class="dev-nav-btn">العودة للمتجر</a>
 
     <div class="admin-container">
       <aside class="sidebar" id="sidebar">
@@ -216,20 +216,18 @@
     <script type="module" src="firebase-init.js"></script>
     <script src="script.js"></script>
 
-    <!-- 2. The Kill Switch: Destroys the old cache and connects the new one -->
+    <!-- سكريبت لتدمير الكاش القديم بقوة وتسجيل الـ Service Worker الجديد -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          // Force unregister all stuck Service Workers
           navigator.serviceWorker.getRegistrations().then(registrations => {
             for (let registration of registrations) {
               registration.unregister();
-              console.log('Old Ghost Worker Terminated.');
+              console.log('تم إلغاء تسجيل الكاش القديم.');
             }
           });
-          // Register the new powerful cache-buster
           navigator.serviceWorker.register('sw.js').then(reg => {
-            console.log('New System Worker Registered Successfully.');
+            console.log('تم تفعيل نظام التحديث المباشر بنجاح.');
           });
         });
       }
