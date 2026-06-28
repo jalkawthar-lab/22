@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Add Firebase loaded listener for initial sync and realtime orders
   window.addEventListener("firebaseReady", () => {
     listenForOrders();
-    syncAllDataFromFirestore(); // سحب البيانات من فايربيس عند تحميل الصفحة
+    syncAllDataFromFirestore(); // Fetch data from Firebase when the page loads
   });
 });
 
@@ -84,12 +84,12 @@ async function syncItemToFirestore(collectionName, itemData, action) {
     } catch (e) {
       console.error(`Firebase error on ${collectionName}:`, e);
       console.error(
-        `حصل خطأ في حفظ ${collectionName} في فايربيس (قد تكون قواعد البيانات Rules تمنع الكتابة): ${e.message}`,
+        `An error occurred while saving ${collectionName} in Firebase (Database Rules may prevent writing): ${e.message}`,
       );
     }
   } else {
     console.warn(
-      "لم يتم تجهيز فايربيس بعد. الرجاء الانتظار بضع ثوان والمحاولة مرة أخرى.",
+      "Firebase is not ready yet. Please wait a few seconds and try again.",
     );
   }
 }
@@ -119,11 +119,11 @@ function listenForOrders() {
   }
 }
 
-// دالة جديدة لسحب البيانات الفعلية من فايربيس وتحديث اللوحة بها
+// Fetch active data from Firestore and update the control panel layout
 async function syncAllDataFromFirestore() {
   if (window.db && window.firestore) {
     try {
-      // سحب المنتجات
+      // Fetch products
       const productsSnap = await window.firestore.getDocs(window.firestore.collection(window.db, "products"));
       let fetchedProducts = [];
       productsSnap.forEach((doc) => {
@@ -131,7 +131,7 @@ async function syncAllDataFromFirestore() {
       });
       localStorage.setItem("products", JSON.stringify(fetchedProducts));
 
-      // سحب الفئات
+      // Fetch categories
       const categoriesSnap = await window.firestore.getDocs(window.firestore.collection(window.db, "categories"));
       let fetchedCategories = [];
       categoriesSnap.forEach((doc) => {
@@ -139,7 +139,7 @@ async function syncAllDataFromFirestore() {
       });
       localStorage.setItem("categories", JSON.stringify(fetchedCategories));
 
-      // سحب البنرات
+      // Fetch banners
       if (window.firestore.getDoc) {
         const bannersDoc = await window.firestore.getDoc(window.firestore.doc(window.db, "meta", "banners"));
         if (bannersDoc.exists && bannersDoc.exists()) {
@@ -147,12 +147,12 @@ async function syncAllDataFromFirestore() {
         }
       }
 
-      // تحديث العرض
+      // Update UI elements
       populateCategorySelects();
       loadAdminProducts();
       loadAdminCategories();
       loadAdminBanners();
-      console.log("تم سحب البيانات من فايربيس بنجاح");
+      console.log("Data synced successfully from Firestore");
     } catch (e) {
       console.error("Error syncing data from Firestore:", e);
     }
@@ -166,21 +166,21 @@ function initTabs() {
 
   tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
-      // إزالة التفعيل من جميع التبويبات
+      // Remove active states from all tabs
       tabs.forEach((t) => t.classList.remove("active"));
       contents.forEach((c) => c.classList.remove("active"));
 
-      // إضافة التفعيل للتبويب المحدد
+      // Add active state to the selected tab
       tab.classList.add("active");
       const targetId = tab.dataset.tab + "-tab";
       document.getElementById(targetId).classList.add("active");
 
-      // تحديث عنوان الصفحة
+      // Update header title context
       if (headerTitle) {
         headerTitle.innerText = tab.innerText;
       }
 
-      // إغلاق القائمة الجانبية في الموبايل عند التحديد
+      // Close mobile navigation drawer if open upon selection
       const sidebar = document.getElementById("sidebar");
       if (window.innerWidth <= 768 && sidebar) {
         sidebar.classList.remove("open");
@@ -208,24 +208,24 @@ function loadOrders() {
   try {
     pendingOrders = JSON.parse(localStorage.getItem("pendingOrders") || "[]");
   } catch (e) {
-    console.error("خطأ في قراءة الطلبات", e);
+    console.error("Error parsing pending orders layout", e);
   }
 
   if (pendingOrders.length === 0) {
     container.innerHTML =
-      '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1; font-size: 1.1rem;">لا توجد طلبات معلقة حالياً...</div>';
+      '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1; font-size: 1.1rem;">No pending orders available at the moment...</div>';
     return;
   }
 
-  // ترتيب الطلبات من الأحدث للأقدم
+  // Sort orders chronologically from newest to oldest
   pendingOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
 
   container.innerHTML = "";
 
-  // جلب بيانات العميل (مؤقتاً من الكاش، في التطبيق الحقيقي تخزن مع الطلب)
-  const cName = localStorage.getItem("checkoutName") || "غير مدخل";
-  const cAddress = localStorage.getItem("checkoutAddress") || "غير مدخل";
-  const cPhone = localStorage.getItem("checkoutPhone") || "غير مدخل";
+  // Fetch fallback customer variables from client device memory
+  const cName = localStorage.getItem("checkoutName") || "Not Provided";
+  const cAddress = localStorage.getItem("checkoutAddress") || "Not Provided";
+  const cPhone = localStorage.getItem("checkoutPhone") || "Not Provided";
   const shippingFee = 3000;
 
   const colors = [
@@ -246,7 +246,7 @@ function loadOrders() {
       hour: "2-digit",
       minute: "2-digit",
     };
-    const orderDate = orderDateObj.toLocaleDateString("ar-IQ", dateOptions);
+    const orderDate = orderDateObj.toLocaleDateString("en-US", dateOptions);
 
     let subtotal = 0;
     let itemsHtml = "";
@@ -256,7 +256,7 @@ function loadOrders() {
       itemsHtml += `
             <div class="order-item">
                 <span>${item.name} (${item.quantity}x)</span>
-                <span>${(priceNum * item.quantity).toLocaleString("en-US")} د.ع</span>
+                <span>${(priceNum * item.quantity).toLocaleString("en-US")} IQD</span>
             </div>`;
     });
     const total = subtotal + shippingFee;
@@ -266,23 +266,23 @@ function loadOrders() {
     card.style.backgroundColor = colors[index % colors.length];
     card.innerHTML = `
             <div class="order-header">
-                <span class="order-id">طلب #${order.id.toString().slice(-5)}</span>
+                <span class="order-id">Order #${order.id.toString().slice(-5)}</span>
                 <span class="order-date">${orderDate}</span>
             </div>
             <div class="order-customer">
-                <div><strong>الاسم:</strong> ${cName}</div>
-                <div><strong>العنوان:</strong> ${cAddress}</div>
-                <div><strong>الهاتف:</strong> <span dir="ltr">${cPhone}</span></div>
+                <div><strong>Name:</strong> ${cName}</div>
+                <div><strong>Address:</strong> ${cAddress}</div>
+                <div><strong>Phone:</strong> <span dir="ltr">${cPhone}</span></div>
             </div>
             <div class="order-items">
                 ${itemsHtml}
             </div>
             <div class="order-total">
-                المجموع الكلي: ${total.toLocaleString("en-US")} د.ع
+                Total Price: ${total.toLocaleString("en-US")} IQD
             </div>
             <div class="order-actions">
-                <button class="btn btn-accept process-order-btn" data-id="${order.id}" data-action="accept">قبول</button>
-                <button class="btn btn-reject process-order-btn" data-id="${order.id}" data-action="reject">رفض</button>
+                <button class="btn btn-accept process-order-btn" data-id="${order.id}" data-action="accept">Accept</button>
+                <button class="btn btn-reject process-order-btn" data-id="${order.id}" data-action="reject">Reject</button>
             </div>
         `;
     container.appendChild(card);
@@ -336,7 +336,6 @@ window.processOrder = async function (id, action) {
     }
   }
 
-  // إعادة تحميل القائمة لمعاينة التغييرات
   loadOrders();
   if (typeof loadAcceptedOrders === "function") {
     loadAcceptedOrders();
@@ -351,23 +350,22 @@ function loadAcceptedOrders() {
   try {
     acceptedOrders = JSON.parse(localStorage.getItem("acceptedOrders") || "[]");
   } catch (e) {
-    console.error("خطأ في قراءة الطلبات المقبولة", e);
+    console.error("Error reading accepted orders", e);
   }
 
   if (acceptedOrders.length === 0) {
     container.innerHTML =
-      '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1; font-size: 1.1rem;">لا توجد طلبات مقبولة حالياً...</div>';
+      '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1; font-size: 1.1rem;">No accepted orders available at the moment...</div>';
     return;
   }
 
-  // ترتيب الطلبات من الأحدث للأقدم
   acceptedOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
 
   container.innerHTML = "";
 
-  const cName = localStorage.getItem("checkoutName") || "غير مدخل";
-  const cAddress = localStorage.getItem("checkoutAddress") || "غير مدخل";
-  const cPhone = localStorage.getItem("checkoutPhone") || "غير مدخل";
+  const cName = localStorage.getItem("checkoutName") || "Not Provided";
+  const cAddress = localStorage.getItem("checkoutAddress") || "Not Provided";
+  const cPhone = localStorage.getItem("checkoutPhone") || "Not Provided";
   const shippingFee = parseInt(localStorage.getItem("deliveryCost")) || 3000;
 
   acceptedOrders.forEach((order) => {
@@ -379,7 +377,7 @@ function loadAcceptedOrders() {
       hour: "2-digit",
       minute: "2-digit",
     };
-    const orderDate = orderDateObj.toLocaleDateString("ar-IQ", dateOptions);
+    const orderDate = orderDateObj.toLocaleDateString("en-US", dateOptions);
 
     let subtotal = 0;
     let itemsHtml = "";
@@ -389,7 +387,7 @@ function loadAcceptedOrders() {
       itemsHtml += `
             <div class="order-item">
                 <span>${item.name} (${item.quantity}x)</span>
-                <span>${(priceNum * item.quantity).toLocaleString("en-US")} د.ع</span>
+                <span>${(priceNum * item.quantity).toLocaleString("en-US")} IQD</span>
             </div>`;
     });
     const total = subtotal + shippingFee;
@@ -399,22 +397,22 @@ function loadAcceptedOrders() {
     card.style.border = "1px solid #10b981";
     card.innerHTML = `
             <div class="order-header">
-                <span class="order-id">طلب #${order.id.toString().slice(-5)}</span>
+                <span class="order-id">Order #${order.id.toString().slice(-5)}</span>
                 <span class="order-date">${orderDate}</span>
             </div>
             <div class="order-customer">
-                <div><strong>الاسم:</strong> ${cName}</div>
-                <div><strong>العنوان:</strong> ${cAddress}</div>
-                <div><strong>الهاتف:</strong> <span dir="ltr">${cPhone}</span></div>
+                <div><strong>Name:</strong> ${cName}</div>
+                <div><strong>Address:</strong> ${cAddress}</div>
+                <div><strong>Phone:</strong> <span dir="ltr">${cPhone}</span></div>
             </div>
             <div class="order-items">
                 ${itemsHtml}
             </div>
             <div class="order-total">
-                المجموع الكلي: ${total.toLocaleString("en-US")} د.ع
+                Total Price: ${total.toLocaleString("en-US")} IQD
             </div>
             <div class="order-actions">
-                <button class="btn btn-reject delete-accepted-order-btn" data-id="${order.id}">حذف السجل</button>
+                <button class="btn btn-reject delete-accepted-order-btn" data-id="${order.id}">Delete History Log</button>
             </div>
         `;
     container.appendChild(card);
@@ -455,7 +453,7 @@ window.deleteAcceptedOrder = async function (id) {
 };
 
 // ------------------------------------
-// قسم إدارة المنتجات
+// Product Management Module
 // ------------------------------------
 
 function populateCategorySelects() {
@@ -485,11 +483,11 @@ function initProductsTab() {
     addProductBtn.addEventListener("click", () => {
       if (formContainer.style.display === "none") {
         formContainer.style.display = "block";
-        addProductBtn.innerText = "إلغاء";
+        addProductBtn.innerText = "Cancel";
         addProductBtn.style.background = "#ef4444";
       } else {
         formContainer.style.display = "none";
-        addProductBtn.innerText = "إضافة منتج جديد";
+        addProductBtn.innerText = "Add New Product";
         addProductBtn.style.background = "#10b981";
       }
     });
@@ -500,15 +498,16 @@ function initProductsTab() {
       const name = document.getElementById("new-product-name").value;
       const price = document.getElementById("new-product-price").value;
       const category = document.getElementById("new-product-category").value;
+      const description = document.getElementById("new-product-desc").value;
       const imageInput = document.getElementById("new-product-image");
       const imageFile = imageInput.files[0];
 
       if (!name || !price || !category || !imageFile) {
-        alert("يرجى ملء جميع الحقول واختيار صورة!");
+        alert("Please complete all fields and choose an item image!");
         return;
       }
 
-      saveBtn.innerText = "جاري الحفظ...";
+      saveBtn.innerText = "Saving item state...";
       saveBtn.disabled = true;
 
       compressImageFile(imageFile, function (compressedBase64) {
@@ -528,7 +527,7 @@ function initProductsTab() {
               ? Math.max(...products.map((p) => p.id)) + 1
               : 1;
           const formattedPrice =
-            parseInt(price).toLocaleString("en-US") + " د.ع";
+            parseInt(price).toLocaleString("en-US") + " IQD";
 
           const newProduct = {
             id: newId,
@@ -537,6 +536,7 @@ function initProductsTab() {
             image: compressedBase64,
             rating: 5,
             category: category,
+            description: description
           };
 
           products.push(newProduct);
@@ -546,17 +546,18 @@ function initProductsTab() {
           document.getElementById("new-product-name").value = "";
           document.getElementById("new-product-price").value = "";
           document.getElementById("new-product-image").value = "";
+          document.getElementById("new-product-desc").value = "";
           formContainer.style.display = "none";
-          addProductBtn.innerText = "إضافة منتج جديد";
+          addProductBtn.innerText = "Add New Product";
           addProductBtn.style.background = "#10b981";
 
-          alert("تمت إضافة المنتج بنجاح!");
+          alert("Product added successfully!");
           loadAdminProducts();
         } catch (err) {
           console.error(err);
-          alert("خطأ! مساحة التخزين ممتلئة.");
+          alert("Error! Storage capacity limit hit.");
         } finally {
-          saveBtn.innerText = "حفظ المنتج";
+          saveBtn.innerText = "Save Product";
           saveBtn.disabled = false;
         }
       });
@@ -568,7 +569,6 @@ function loadAdminProducts() {
   const container = document.getElementById("admin-products-container");
   if (!container) return;
 
-  // Attach edit events once if not attached
   if (!window.editEventsAttached) {
     const cancelBtn = document.getElementById("cancel-edit-btn");
     const updateBtn = document.getElementById("update-product-btn");
@@ -585,26 +585,28 @@ function loadAdminProducts() {
         const name = document.getElementById("edit-product-name").value;
         const price = document.getElementById("edit-product-price").value;
         const category = document.getElementById("edit-product-category").value;
+        const description = document.getElementById("edit-product-desc").value;
         const imageInput = document.getElementById("edit-product-image");
         const imageFile = imageInput.files[0];
 
         if (!name || !price || !category) {
-          alert("يرجى ملء كافة الحقول الأساسية!");
+          alert("Please fill out all mandatory core fields!");
           return;
         }
 
         let products = JSON.parse(localStorage.getItem("products")) || [];
 
-        const formattedPrice = parseInt(price).toLocaleString("en-US") + " د.ع";
+        const formattedPrice = parseInt(price).toLocaleString("en-US") + " IQD";
         const index = products.findIndex((p) => p.id === id);
 
         if (index !== -1) {
           products[index].name = name;
           products[index].price = formattedPrice;
           products[index].category = category;
+          products[index].description = description;
 
           if (imageFile) {
-            updateBtn.innerText = "جاري الحفظ...";
+            updateBtn.innerText = "Saving changes...";
             updateBtn.disabled = true;
             compressImageFile(imageFile, function (compressedBase64) {
               products[index].image = compressedBase64;
@@ -614,12 +616,12 @@ function loadAdminProducts() {
                 document.getElementById("edit-product-form").style.display =
                   "none";
                 loadAdminProducts();
-                alert("تم التعديل بنجاح!");
+                alert("Modifications saved successfully!");
               } catch (err) {
                 console.error(err);
-                alert("خطأ! مساحة التخزين ممتلئة.");
+                alert("Error! Storage capacity limit hit.");
               } finally {
-                updateBtn.innerText = "حفظ التعديلات";
+                updateBtn.innerText = "Save edits";
                 updateBtn.disabled = false;
               }
             });
@@ -630,10 +632,10 @@ function loadAdminProducts() {
               document.getElementById("edit-product-form").style.display =
                 "none";
               loadAdminProducts();
-              alert("تم التعديل بنجاح!");
+              alert("Modifications saved successfully!");
             } catch (err) {
               console.error(err);
-              alert("خطأ! مساحة التخزين ممتلئة.");
+              alert("Error! Storage capacity limit hit.");
             }
           }
         }
@@ -648,25 +650,25 @@ function loadAdminProducts() {
 
   if (products.length === 0) {
     container.innerHTML =
-      '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1;">لا توجد منتجات.</div>';
+      '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1;">No products found inside directory.</div>';
     return;
   }
 
   products.forEach((product) => {
     const card = document.createElement("div");
-    card.className = "order-card"; // نستخدم نفس كارد ستايل الطلبات للاختصار والشكل الجميل
+    card.className = "order-card";
     card.innerHTML = `
             <div style="display:flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
                 <img src="${product.image}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
                 <div>
                     <h4 style="color: var(--primary); margin-bottom: 0.25rem;">${product.name}</h4>
                     <div style="color: var(--text-main); font-weight: 600;">${product.price}</div>
-                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top:0.25rem;">الفئة: ${getCategoryName(product.category)}</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top:0.25rem;">Category: ${getCategoryName(product.category)}</div>
                 </div>
             </div>
             <div class="order-actions" style="margin-top: auto;">
-                <button class="btn btn-accept edit-product-btn" data-id="${product.id}" style="background: var(--primary);">تعديل</button>
-                <button class="btn btn-reject delete-product-btn" data-id="${product.id}">حذف</button>
+                <button class="btn btn-accept edit-product-btn" data-id="${product.id}" style="background: var(--primary);">Edit</button>
+                <button class="btn btn-reject delete-product-btn" data-id="${product.id}">Delete</button>
             </div>
         `;
     container.appendChild(card);
@@ -690,7 +692,7 @@ function loadAdminProducts() {
 }
 
 function getCategoryName(id) {
-  if (id === "all") return "الكل";
+  if (id === "all") return "All";
   let categories = JSON.parse(localStorage.getItem("categories")) || [];
   const cat = categories.find((c) => c.id === id);
   return cat ? cat.name : id;
@@ -721,6 +723,7 @@ window.editProduct = function (id) {
   document.getElementById("edit-product-price").value = priceNum;
   document.getElementById("edit-product-category").value = product.category;
   document.getElementById("edit-product-image").value = "";
+  document.getElementById("edit-product-desc").value = product.description || "";
 
   document.getElementById("edit-product-form").style.display = "block";
   document
@@ -729,7 +732,7 @@ window.editProduct = function (id) {
 };
 
 // ------------------------------------
-// قسم إدارة البنرات
+// Banner Management Module
 // ------------------------------------
 
 function compressImageFile(file, callback) {
@@ -756,7 +759,7 @@ function compressImageFile(file, callback) {
         callback(canvas.toDataURL("image/jpeg", 0.6));
       } catch (err) {
         console.error("Compression error:", err);
-        callback(e.target.result); // fallback to original
+        callback(e.target.result); // fallback to original state
       }
     };
     img.onerror = function () {
@@ -765,7 +768,7 @@ function compressImageFile(file, callback) {
     img.src = e.target.result;
   };
   reader.onerror = function () {
-    alert("فشل في قراءة الصورة.");
+    alert("Failed to read selected media file image frame.");
     callback(null);
   };
   reader.readAsDataURL(file);
@@ -782,11 +785,11 @@ function initBannersTab() {
     addBannerBtn.addEventListener("click", () => {
       if (formContainer.style.display === "none") {
         formContainer.style.display = "block";
-        addBannerBtn.innerText = "إلغاء";
+        addBannerBtn.innerText = "Cancel";
         addBannerBtn.style.background = "#ef4444";
       } else {
         formContainer.style.display = "none";
-        addBannerBtn.innerText = "إضافة بنر جديد";
+        addBannerBtn.innerText = "Add New Banner";
         addBannerBtn.style.background = "#10b981";
       }
     });
@@ -798,16 +801,16 @@ function initBannersTab() {
       const imageFile = imageInput.files[0];
 
       if (!imageFile) {
-        alert("يرجى اختيار صورة للبنر!");
+        alert("Please specify a display image to set as banner element!");
         return;
       }
 
-      saveBtn.innerText = "جاري الحفظ...";
+      saveBtn.innerText = "Saving array slot...";
       saveBtn.disabled = true;
 
       compressImageFile(imageFile, function (compressedBase64) {
         if (!compressedBase64) {
-          saveBtn.innerText = "حفظ البنر";
+          saveBtn.innerText = "Save Banner";
           saveBtn.disabled = false;
           return;
         }
@@ -834,18 +837,18 @@ function initBannersTab() {
 
           document.getElementById("new-banner-image").value = "";
           formContainer.style.display = "none";
-          addBannerBtn.innerText = "إضافة بنر جديد";
+          addBannerBtn.innerText = "Add New Banner";
           addBannerBtn.style.background = "#10b981";
 
-          alert("تمت إضافة البنر بنجاح!");
+          alert("Banner registered live successfully!");
           loadAdminBanners();
         } catch (error) {
           console.error(error);
           alert(
-            "خطأ أثناء الحفظ! مساحة التخزين ممتلئة. حاول حذف بعض البنرات القديمة أو المنتجات.",
+            "Write block failed! Storage map capacity full. Try clearing old layout records or item slots.",
           );
         } finally {
-          saveBtn.innerText = "حفظ البنر";
+          saveBtn.innerText = "Save Banner";
           saveBtn.disabled = false;
         }
       });
@@ -871,10 +874,9 @@ function loadAdminBanners() {
 
   container.innerHTML = "";
 
-  // Check if banners count is now really 0 (if user manually emptied the fallback)
   if (banners.length === 0) {
     container.innerHTML =
-      '<div style="text-align:center; padding: 3rem; color:var(--text-muted);">لا توجد بنرات حالياً.</div>';
+      '<div style="text-align:center; padding: 3rem; color:var(--text-muted);">No layout banners active inside storage.</div>';
     return;
   }
 
@@ -889,7 +891,7 @@ function loadAdminBanners() {
     card.innerHTML = `
             <img src="${bannerUrl}" style="height: 100px; width: auto; max-width: 70%; object-fit: cover; border-radius: 8px;">
             <div class="order-actions" style="margin: 0; min-width: 100px;">
-                <button class="btn btn-reject delete-banner-btn" data-index="${index}">حذف</button>
+                <button class="btn btn-reject delete-banner-btn" data-index="${index}">Delete</button>
             </div>
         `;
     container.appendChild(card);
@@ -902,7 +904,7 @@ function loadAdminBanners() {
       if (typeof window.deleteBanner === "function") {
         window.deleteBanner(index);
       } else {
-        alert("خطأ: دالة الحذف غير موجودة!");
+        alert("Fatal Error: Matrix element deletion handler reference missing!");
       }
     });
   });
@@ -925,7 +927,6 @@ window.deleteBanner = function (index) {
     if (index >= 0 && index < banners.length) {
       banners.splice(index, 1);
       try {
-        // نستخدم [] للحفظ إذا تم حذف كل البنرات عشان ميرجعوش الافتراضيين
         localStorage.setItem("banners", JSON.stringify(banners));
         if (window.db && window.firestore) {
           window.firestore
@@ -937,19 +938,19 @@ window.deleteBanner = function (index) {
         }
       } catch (e) {
         console.error(e);
-        alert("خطأ أثناء تحديث المساحة كأنها ممتلئة! التفاصيل: " + e.message);
+        alert("Write operation failed! Local state full. Reference log: " + e.message);
         return;
       }
     }
 
     loadAdminBanners();
   } catch (error) {
-    alert("خطأ أثناء الحذف: " + error.message);
+    alert("Process logic crashed during deletion: " + error.message);
     console.error(error);
   }
 };
 
-// Categories functions
+// Category Management Functions
 function initCategoriesTab() {
   const addCategoryBtn = document.getElementById("add-category-btn");
   const addCategoryForm = document.getElementById("add-category-form");
@@ -960,8 +961,8 @@ function initCategoriesTab() {
       const isVisible = addCategoryForm.style.display === "block";
       addCategoryForm.style.display = isVisible ? "none" : "block";
       addCategoryBtn.innerText = isVisible
-        ? "إضافة فئة جديدة"
-        : "إلغاء الإضافة";
+        ? "Add new category"
+        : "Cancel Action";
       if (!isVisible) {
         document.getElementById("edit-category-form").style.display = "none";
       }
@@ -974,13 +975,13 @@ function initCategoriesTab() {
       const imageFile = document.getElementById("new-category-image").files[0];
 
       if (!name) {
-        alert("يرجى إدخال اسم الفئة.");
+        alert("Please supply a recognizable label name string for the Category.");
         return;
       }
 
       const id = "cat_" + Date.now();
 
-      saveCategoryBtn.innerText = "جاري الحفظ...";
+      saveCategoryBtn.innerText = "Saving category map...";
       saveCategoryBtn.disabled = true;
 
       const handleSave = (imgUrl) => {
@@ -995,20 +996,20 @@ function initCategoriesTab() {
           document.getElementById("new-category-name").value = "";
           document.getElementById("new-category-image").value = "";
           addCategoryForm.style.display = "none";
-          addCategoryBtn.innerText = "إضافة فئة جديدة";
+          addCategoryBtn.innerText = "Add new category";
 
           loadAdminCategories();
         } catch (e) {
-          alert("المساحة ممتلئة! يرجى حذف بعض العناصر.");
+          alert("Storage limit ceiling hit! Please remove alternative elements before adding.");
         }
-        saveCategoryBtn.innerText = "حفظ الفئة";
+        saveCategoryBtn.innerText = "Save category";
         saveCategoryBtn.disabled = false;
       };
 
       if (imageFile) {
         compressImageFile(imageFile, handleSave);
       } else {
-        handleSave("https://cdn-icons-png.flaticon.com/512/149/149852.png"); // صورة افتراضية
+        handleSave("https://cdn-icons-png.flaticon.com/512/149/149852.png"); // Fallback placeholder vector graphic image
       }
     });
   }
@@ -1030,7 +1031,7 @@ function initCategoriesTab() {
       const imageFile = document.getElementById("edit-category-image").files[0];
 
       if (!name) {
-        alert("يرجى إدخال اسم الفئة.");
+        alert("Category label key missing context text description.");
         return;
       }
 
@@ -1039,7 +1040,7 @@ function initCategoriesTab() {
       const catIndex = categories.findIndex((c) => c.id === originalId);
       if (catIndex === -1) return;
 
-      updateBtn.innerText = "جاري التحديث...";
+      updateBtn.innerText = "Updating collection index data...";
       updateBtn.disabled = true;
 
       const handleUpdate = (imgUrl) => {
@@ -1054,9 +1055,9 @@ function initCategoriesTab() {
           document.getElementById("edit-category-form").style.display = "none";
           loadAdminCategories();
         } catch (e) {
-          alert("حدث خطأ أثناء الحفظ.");
+          alert("Critical error encountered writing map context data onto device.");
         }
-        updateBtn.innerText = "حفظ التعديلات";
+        updateBtn.innerText = "Save edits";
         updateBtn.disabled = false;
       };
 
@@ -1083,7 +1084,7 @@ function loadAdminCategories() {
 
   if (categories.length === 0) {
     container.innerHTML =
-      '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">لا توجد فئات حالياً.</div>';
+      '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">No active collection records found inside memory.</div>';
     return;
   }
 
@@ -1098,12 +1099,12 @@ function loadAdminCategories() {
                 <img src="${cat.image}" style="width: 50px; height: 50px; object-fit: contain; background: #f8f9fa; border-radius: 8px; padding: 5px;">
                 <div>
                     <h3 style="margin-bottom: 0.25rem;">${cat.name}</h3>
-                    <span style="color: var(--text-muted); font-size: 0.9rem;">معرف: ${cat.id}</span>
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">ID: ${cat.id}</span>
                 </div>
             </div>
             <div class="order-actions" style="margin-top: auto;">
-                <button class="btn btn-accept edit-category-btn" data-id="${cat.id}" style="background: var(--primary);">تعديل</button>
-                <button class="btn btn-reject delete-category-btn" data-id="${cat.id}">حذف</button>
+                <button class="btn btn-accept edit-category-btn" data-id="${cat.id}" style="background: var(--primary);">Edit</button>
+                <button class="btn btn-reject delete-category-btn" data-id="${cat.id}">Delete</button>
             </div>
         `;
     container.appendChild(card);
@@ -1138,7 +1139,7 @@ window.editCategory = function (id) {
   document.getElementById("edit-category-image").value = "";
 
   document.getElementById("add-category-form").style.display = "none";
-  document.getElementById("add-category-btn").innerText = "إضافة فئة جديدة";
+  document.getElementById("add-category-btn").innerText = "Add new category";
 
   const editForm = document.getElementById("edit-category-form");
   editForm.style.display = "block";
@@ -1158,7 +1159,7 @@ window.deleteCategory = function (id) {
     }
     loadAdminCategories();
   } catch (e) {
-    alert("خطأ أثناء الحذف!");
+    alert("Exception error occurred running entity array slice logic!");
   }
 };
 
@@ -1173,7 +1174,7 @@ function initSettingsTab() {
     saveDeliveryCostBtn.addEventListener("click", () => {
       const cost = deliveryCostInput.value;
       localStorage.setItem("deliveryCost", cost);
-      alert("تم حفظ كلفة التوصيل بنجاح");
+      alert("Shipping cost settings modified successfully!");
     });
   }
 }
