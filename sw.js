@@ -1,4 +1,4 @@
-const CACHE_NAME = 'etsyShopIraq-v5';
+const CACHE_NAME = 'etsyShopIraq-v6'; // Updated cache version to force an instant client update
 const urlsToCache = [
   '/',
   '/index.html',
@@ -30,7 +30,7 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Cache hit - return response
+        // Cache hit - return response from cache
         if (response) {
           return response;
         }
