@@ -1,5 +1,5 @@
 :root {
-  /* Matching your storefront exactly */
+  /* مطابقة ألوان المتجر الرئيسية */
   --bg-color: #f0fdf4;       /* أخضر فاتح */
   --bg-category: #e0f2fe;    /* أزرق فاتح */
   --bg-product: #fce7f3;     /* وردي فاتح */
@@ -29,14 +29,14 @@ body {
   display: flex;
   height: 100vh;
   overflow: hidden;
-  direction: rtl; /* Enforce Right to Left orientation */
+  direction: rtl; /* تفعيل الاتجاه من اليمين لليسار */
 }
 
-/* Navigation button to return to the store */
+/* زر العودة للمتجر */
 .dev-nav-btn {
   position: fixed;
   top: 10px;
-  right: 10px; /* Switched to right for RTL */
+  right: 10px; /* اليمين ليتوافق مع اللغة العربية */
   background: var(--primary);
   color: white;
   padding: 6px 12px;
@@ -65,7 +65,7 @@ body {
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease;
-  border-left: 1px solid var(--border); /* Changed to border-left for RTL */
+  border-left: 1px solid var(--border); 
 }
 
 .sidebar-header {
@@ -90,7 +90,7 @@ body {
   padding: 1rem 1.5rem;
   cursor: pointer;
   transition: all 0.2s;
-  border-right: 4px solid transparent; /* Changed to border-right for RTL */
+  border-right: 4px solid transparent; 
   font-weight: 700;
 }
 
@@ -101,7 +101,7 @@ body {
 
 .sidebar-menu li.active {
   background: var(--sidebar-hover);
-  border-right-color: var(--primary); /* Changed to border-right */
+  border-right-color: var(--primary); 
   color: var(--primary);
 }
 
@@ -151,7 +151,6 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Grid Framework */
 .orders-grid {
   display: grid;
   gap: 1.5rem;
@@ -168,7 +167,6 @@ body {
   flex-direction: column;
 }
 
-/* Applying specific pastel colors from your request */
 #admin-products-container .order-card {
   background: var(--bg-product);
   border-color: #fbcfe8;
@@ -236,7 +234,7 @@ body {
   padding-top: 1rem;
   border-top: 1px solid var(--border);
   font-size: 1.1rem;
-  text-align: left; /* Flips text position appropriately for RTL layouts */
+  text-align: left; /* تغيير الاتجاه لليسار للغة العربية */
 }
 
 .order-actions {
@@ -272,7 +270,7 @@ body {
 
   .sidebar {
     position: fixed;
-    right: 0; /* Aligned to right edge for RTL Arabic layout */
+    right: 0; 
     left: auto;
     top: 0;
     bottom: 0;
