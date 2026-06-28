@@ -1,4 +1,4 @@
-const CACHE_NAME = 'my-phone-store-v4';
+const CACHE_NAME = 'etsyShopIraq-v5';
 const urlsToCache = [
   '/',
   '/index.html',
