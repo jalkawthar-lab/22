@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>لوحة الإدارة - المتجر</title>
+    <title>Shop Control Panel</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
       rel="stylesheet"
@@ -14,15 +14,15 @@
     <div class="admin-container">
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-          <h2>لوحة الإدارة</h2>
+          <h2>Shop Control Panel</h2>
         </div>
         <ul class="sidebar-menu">
-          <li class="active" data-tab="orders">الطلبات</li>
-          <li data-tab="accepted-orders">الطلبات المقبولة</li>
-          <li data-tab="products">المنتجات</li>
-          <li data-tab="categories">الفئات</li>
-          <li data-tab="banners">البنرات</li>
-          <li data-tab="settings">إعدادات التوصيل</li>
+          <li class="active" data-tab="orders">Orders</li>
+          <li data-tab="accepted-orders">Accepted Orders</li>
+          <li data-tab="products">Products</li>
+          <li data-tab="categories">Categories</li>
+          <li data-tab="banners">Banners</li>
+          <li data-tab="settings">Shipping settings</li>
         </ul>
       </aside>
 
@@ -42,18 +42,18 @@
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          <h3>الطلبات الواردة</h3>
+          <h3>Pending Orders</h3>
         </header>
 
         <div class="tab-content active" id="orders-tab">
           <div class="orders-grid" id="orders-container">
-            <p>جاري تحميل الطلبات...</p>
+            <p>Loading orders ...</p>
           </div>
         </div>
 
         <div class="tab-content" id="accepted-orders-tab">
           <div class="orders-grid" id="accepted-orders-container">
-            <p>جاري تحميل الطلبات...</p>
+            <p>Loading Orders ...</p>
           </div>
         </div>
 
@@ -67,13 +67,13 @@
               margin-bottom: 1.5rem;
             "
           >
-            <h3>إدارة المنتجات</h3>
+            <h3>Products Management</h3>
             <button
               class="btn btn-accept"
               id="add-product-btn"
               style="width: auto"
             >
-              إضافة منتج جديد
+              Add New Product
             </button>
           </div>
 
@@ -91,7 +91,7 @@
             "
           >
             <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              معلومات المنتج الجديد
+              Product Details
             </h4>
             <div
               style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
@@ -103,12 +103,12 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >اسم المنتج</label
+                  >Product Name</label
                 >
                 <input
                   type="text"
                   id="new-product-name"
-                  placeholder="اسم المنتج..."
+                  placeholder="Product Name ..."
                   style="
                     width: 100%;
                     padding: 0.75rem;
@@ -125,12 +125,12 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >السعر (د.ع)</label
+                  >Price (IQD)</label
                 >
                 <input
                   type="number"
                   id="new-product-price"
-                  placeholder="مثال: 25000"
+                  placeholder="Example: 25000"
                   style="
                     width: 100%;
                     padding: 0.75rem;
@@ -147,7 +147,7 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >الفئة</label
+                  >Category</label
                 >
                 <select
                   id="new-product-category"
@@ -174,7 +174,7 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >صورة المنتج</label
+                  >Product Image</label
                 >
                 <input
                   type="file"
@@ -196,7 +196,7 @@
               id="save-product-btn"
               style="margin-top: 1.5rem; width: 100%"
             >
-              حفظ المنتج
+              Save Product
             </button>
           </div>
 
@@ -217,7 +217,7 @@
             "
           >
             <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              تعديل المنتج
+              Edit Product
             </h4>
             <input type="hidden" id="edit-product-id" />
             <div
@@ -230,7 +230,7 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >اسم المنتج</label
+                  >Product Name</label
                 >
                 <input
                   type="text"
@@ -251,7 +251,7 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >السعر (د.ع)</label
+                  >Price (IQD)</label
                 >
                 <input
                   type="number"
@@ -272,7 +272,7 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >الفئة</label
+                  >Category</label
                 >
                 <select
                   id="edit-product-category"
@@ -299,7 +299,7 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >تغيير الصورة (اختياري)</label
+                  >Change Image (Optional) </label
                 >
                 <input
                   type="file"
@@ -322,14 +322,14 @@
                 id="update-product-btn"
                 style="flex: 1"
               >
-                حفظ التعديلات
+                Save edits
               </button>
               <button
                 class="btn btn-reject"
                 id="cancel-edit-btn"
                 style="flex: 1"
               >
-                إلغاء
+                Cancel
               </button>
             </div>
           </div>
@@ -345,13 +345,13 @@
               margin-bottom: 1.5rem;
             "
           >
-            <h3>إدارة الفئات</h3>
+            <h3>Category Management</h3>
             <button
               class="btn btn-accept"
               id="add-category-btn"
               style="width: auto"
             >
-              إضافة فئة جديدة
+              Add new category
             </button>
           </div>
 
@@ -369,7 +369,7 @@
             "
           >
             <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              معلومات الفئة الجديدة
+              New category information
             </h4>
             <div style="display: grid; grid-template-columns: 1fr; gap: 1rem">
               <input type="hidden" id="new-category-id" />
@@ -380,12 +380,12 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >اسم الفئة (عربي)</label
+                  >Category Name</label
                 >
                 <input
                   type="text"
                   id="new-category-name"
-                  placeholder="اسم الفئة..."
+                  placeholder="Category Name ..."
                   style="
                     width: 100%;
                     padding: 0.75rem;
@@ -402,7 +402,7 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >صورة الفئة (أيقونة)</label
+                  >Category Icon</label
                 >
                 <input
                   type="file"
@@ -424,7 +424,7 @@
               id="save-category-btn"
               style="margin-top: 1.5rem; width: 100%"
             >
-              حفظ الفئة
+              Save category
             </button>
           </div>
 
@@ -445,7 +445,7 @@
             "
           >
             <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              تعديل الفئة
+              Edit Category
             </h4>
             <input type="hidden" id="edit-category-original-id" />
             <input type="hidden" id="edit-category-id" />
@@ -457,7 +457,7 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >اسم الفئة (عربي)</label
+                  >Category Name</label
                 >
                 <input
                   type="text"
@@ -478,7 +478,7 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >تغيير صورة الفئة (اختياري)</label
+                  >Change category icon (optional) </label
                 >
                 <input
                   type="file"
@@ -501,14 +501,14 @@
                 id="update-category-btn"
                 style="flex: 1"
               >
-                حفظ التعديلات
+                Save edits
               </button>
               <button
                 class="btn btn-reject"
                 id="cancel-category-edit-btn"
                 style="flex: 1"
               >
-                إلغاء
+                Cancel
               </button>
             </div>
           </div>
@@ -524,13 +524,13 @@
               margin-bottom: 1.5rem;
             "
           >
-            <h3>إدارة البنرات</h3>
+            <h3>Banners Management </h3>
             <button
               class="btn btn-accept"
               id="add-banner-btn"
               style="width: auto"
             >
-              إضافة بنر جديد
+              Add New Banner
             </button>
           </div>
 
@@ -548,7 +548,7 @@
             "
           >
             <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              صورة البنر الجديد
+              New Banner Image
             </h4>
             <p
               style="
@@ -557,7 +557,7 @@
                 font-size: 0.9rem;
               "
             >
-              يفضل أن تكون الصورة بعرض مناسب للمتجر (أفقية).
+              It is better to choose a horizontal image to match the store layout.
             </p>
             <div style="display: grid; grid-template-columns: 1fr; gap: 1rem">
               <div class="input-group">
@@ -567,7 +567,7 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >صورة البنر</label
+                  >Banner Image </label
                 >
                 <input
                   type="file"
@@ -589,7 +589,7 @@
               id="save-banner-btn"
               style="margin-top: 1.5rem; width: 100%"
             >
-              حفظ البنر
+              Save Banner
             </button>
           </div>
 
@@ -602,7 +602,7 @@
         </div>
 
         <div class="tab-content" id="settings-tab">
-          <h3>الإعدادات</h3>
+          <h3>Settings </h3>
           <div
             class="delivery-cost-settings"
             style="
@@ -615,7 +615,7 @@
             "
           >
             <h4 style="margin-bottom: 1rem; color: var(--primary)">
-              إعدادات التوصيل
+              Shipping Settings
             </h4>
             <div style="display: flex; gap: 1rem; align-items: flex-end">
               <div class="input-group" style="flex: 1">
@@ -625,12 +625,12 @@
                     margin-bottom: 0.5rem;
                     font-weight: 600;
                   "
-                  >كلفة التوصيل (د.ع)</label
+                  >Delivery Fees (IQD) </label
                 >
                 <input
                   type="number"
                   id="delivery-cost-input"
-                  placeholder="مثال: 5000"
+                  placeholder="Example: 5000"
                   style="
                     width: 100%;
                     padding: 0.75rem;
@@ -645,7 +645,7 @@
                 id="save-delivery-cost-btn"
                 style="width: auto; height: 100%"
               >
-                حفظ كلفة التوصيل
+                Save Shipping fees
               </button>
             </div>
           </div>
