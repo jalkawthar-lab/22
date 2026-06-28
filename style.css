@@ -25,7 +25,7 @@ body {
   overflow: hidden;
 }
 
-/* زر التنقل للعودة للمتجر */
+/* Navigation button to return to the store */
 .dev-nav-btn {
   position: fixed;
   top: 10px;
@@ -81,7 +81,7 @@ body {
   padding: 1rem 1.5rem;
   cursor: pointer;
   transition: all 0.2s;
-  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
   font-weight: 600;
 }
 
@@ -91,7 +91,7 @@ body {
 
 .sidebar-menu li.active {
   background: var(--sidebar-hover);
-  border-right-color: var(--primary);
+  border-left-color: var(--primary);
   color: var(--primary);
 }
 
@@ -118,7 +118,7 @@ body {
   border: none;
   cursor: pointer;
   color: var(--text-main);
-  display: none; /* مخفي في الشاشات الكبيرة */
+  display: none; /* Hidden on large desktop viewports */
 }
 
 .tab-content {
@@ -222,7 +222,7 @@ body {
   padding-top: 1rem;
   border-top: 1px solid var(--border);
   font-size: 1.1rem;
-  text-align: left; /* أو right حسب التصميم */
+  text-align: right; /* Aligned right to match English reading order layouts */
 }
 
 .order-actions {
@@ -262,16 +262,16 @@ body {
 
   .sidebar {
     position: fixed;
-    right: 0;
+    left: 0;
     top: 0;
     bottom: 0;
-    transform: translateX(100%);
+    transform: translateX(-100%); /* Adjusted to slide out nicely on English ltr layouts */
     z-index: 100;
   }
 
   .sidebar.open {
     transform: translateX(0);
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
   }
 
   .orders-grid {
