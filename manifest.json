@@ -1,11 +1,11 @@
 {
-  "name": "متجر ماي فون",
-  "short_name": "ماي فون",
-  "start_url": "/user/index.html",
+  "name": "etsyShopIraq",
+  "short_name": "etsyShopIraq",
+  "start_url": "/22/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#378b8e",
-  "description": "متجر ماي فون لبيع المنتجات",
+  "description": "etsyShopIraq Control Panel",
   "icons": [
     {
       "src": "icon-192.png",
