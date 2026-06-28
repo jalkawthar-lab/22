@@ -154,7 +154,6 @@ function loadOrders() {
   container.innerHTML = "";
 
   pendingOrders.forEach((order) => {
-    // FIX: Pulling correct values directly from the database entry rather than local client cache
     const cName = order.customerName || "غير متوفر";
     const cAddress = order.customerAddress || "غير متوفر";
     const cPhone = order.customerPhone || "غير متوفر";
@@ -318,9 +317,6 @@ window.deleteAcceptedOrder = async function (id) {
   }
 };
 
-// ===================================
-// Product Management
-// ===================================
 function populateCategorySelects() {
   let categories = JSON.parse(localStorage.getItem("categories")) || [];
   const newSelect = document.getElementById("new-product-category");
@@ -551,9 +547,6 @@ window.editProduct = function (id) {
   document.getElementById("edit-product-form").scrollIntoView({ behavior: "smooth", block: "center" });
 };
 
-// ===================================
-// Banners Management
-// ===================================
 function compressImageFile(file, callback) {
   const reader = new FileReader();
   reader.onload = function (e) {
@@ -689,9 +682,6 @@ window.deleteBanner = function (index) {
   loadAdminBanners();
 };
 
-// ===================================
-// Categories Management
-// ===================================
 function initCategoriesTab() {
   const addCategoryBtn = document.getElementById("add-category-btn");
   const addCategoryForm = document.getElementById("add-category-form");
