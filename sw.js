@@ -1,56 +1,26 @@
-const CACHE_NAME = 'etsyShopIraq-v6'; // Updated cache version to force an instant client update
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/user/index.html',
-  '/user/style.css',
-  '/user/app.js',
-  '/admin/admin.html',
-  '/admin/admin.css',
-  '/admin/admin.js',
-  '/manifest.json',
-  '/firebase-init.js'
-];
+const CACHE_NAME = 'admin-panel-v7-force-update';
 
-self.addEventListener('install', event => {
+// 1. Install and instantly take over the browser
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
+});
+
+// 2. Activate and wipe out EVERY old cache from the previous versions
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-  );
-  // Do NOT self.skipWaiting() here automatically.
-});
-
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-});
-
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response from cache
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
-  );
-});
-
-self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
+        cacheNames.map((cacheName) => {
+          console.log('[Service Worker] Wiping old cache:', cacheName);
+          return caches.delete(cacheName);
         })
       );
     })
   );
   self.clients.claim();
+});
+
+// 3. Network-Only strategy: Always fetch the freshest files from the server
+self.addEventListener('fetch', (event) => {
+  event.respondWith(fetch(event.request));
 });
