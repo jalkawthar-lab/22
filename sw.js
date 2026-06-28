@@ -1,11 +1,11 @@
-const CACHE_NAME = 'admin-panel-v7-force-update';
+const CACHE_NAME = 'admin-panel-v8-force-update';
 
-// 1. Install and instantly take over the browser
+// تخطي الانتظار وتفعيل نفسه فوراً
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// 2. Activate and wipe out EVERY old cache from the previous versions
+// تدمير أي كاش قديم
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -20,7 +20,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// 3. Network-Only strategy: Always fetch the freshest files from the server
+// الاعتماد كلياً على الشبكة لضمان جلب التحديثات فوراً
 self.addEventListener('fetch', (event) => {
   event.respondWith(fetch(event.request));
 });
