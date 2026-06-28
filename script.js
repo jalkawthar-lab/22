@@ -8,10 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initBannersTab();
   initSettingsTab();
 
-  // Add Firebase loaded listener for initial sync and realtime orders
   window.addEventListener("firebaseReady", () => {
     listenForOrders();
-    syncAllDataFromFirestore(); // Fetch data from Firebase when the page loads
+    syncAllDataFromFirestore(); 
   });
 });
 
@@ -20,11 +19,8 @@ async function updateAdminCacheVersion() {
     try {
       await window.firestore.setDoc(
         window.firestore.doc(window.db, "meta", "version"),
-        {
-          updatedAt: window.firestore.serverTimestamp(),
-        },
+        { updatedAt: window.firestore.serverTimestamp() },
       );
-      console.log("Firebase cache version updated");
     } catch (e) {
       console.error("Error updating meta version:", e);
     }
@@ -36,61 +32,30 @@ async function syncItemToFirestore(collectionName, itemData, action) {
     try {
       if (action === "delete") {
         if (itemData.firestoreId) {
-          await window.firestore.deleteDoc(
-            window.firestore.doc(
-              window.db,
-              collectionName,
-              itemData.firestoreId,
-            ),
-          );
+          await window.firestore.deleteDoc(window.firestore.doc(window.db, collectionName, itemData.firestoreId));
         } else {
-          // Fallback to local id string if no firestoreId
-          const querySnap = await window.firestore.getDocs(
-            window.firestore.collection(window.db, collectionName),
-          );
+          const querySnap = await window.firestore.getDocs(window.firestore.collection(window.db, collectionName));
           querySnap.forEach(async (docSnap) => {
-            if (docSnap.data().id === itemData.id) {
-              await window.firestore.deleteDoc(docSnap.ref);
-            }
+            if (docSnap.data().id === itemData.id) await window.firestore.deleteDoc(docSnap.ref);
           });
         }
       } else if (action === "add") {
-        await window.firestore.addDoc(
-          window.firestore.collection(window.db, collectionName),
-          itemData,
-        );
+        await window.firestore.addDoc(window.firestore.collection(window.db, collectionName), itemData);
       } else if (action === "update") {
         if (itemData.firestoreId) {
-          await window.firestore.updateDoc(
-            window.firestore.doc(
-              window.db,
-              collectionName,
-              itemData.firestoreId,
-            ),
-            itemData,
-          );
+          await window.firestore.updateDoc(window.firestore.doc(window.db, collectionName, itemData.firestoreId), itemData);
         } else {
-          const querySnap = await window.firestore.getDocs(
-            window.firestore.collection(window.db, collectionName),
-          );
+          const querySnap = await window.firestore.getDocs(window.firestore.collection(window.db, collectionName));
           querySnap.forEach(async (docSnap) => {
-            if (docSnap.data().id === itemData.id) {
-              await window.firestore.updateDoc(docSnap.ref, itemData);
-            }
+            if (docSnap.data().id === itemData.id) await window.firestore.updateDoc(docSnap.ref, itemData);
           });
         }
       }
       await updateAdminCacheVersion();
     } catch (e) {
-      console.error(`Firebase error on ${collectionName}:`, e);
-      console.error(
-        `An error occurred while saving ${collectionName} in Firebase (Database Rules may prevent writing): ${e.message}`,
-      );
+      console.error(`خطأ في السيرفر أثناء التعامل مع ${collectionName}:`, e);
+      alert("حدث خطأ أثناء الاتصال بقاعدة البيانات. تأكد من إعدادات الصلاحيات.");
     }
-  } else {
-    console.warn(
-      "Firebase is not ready yet. Please wait a few seconds and try again.",
-    );
   }
 }
 
@@ -103,13 +68,8 @@ function listenForOrders() {
         snapshot.forEach((doc) => {
           firestoreOrders.push({ firestoreId: doc.id, ...doc.data() });
         });
-        // Merge or assign to pending based on status
-        const pendingOrders = firestoreOrders.filter(
-          (o) => o.status === "pending",
-        );
-        const acceptedOrders = firestoreOrders.filter(
-          (o) => o.status === "accepted",
-        );
+        const pendingOrders = firestoreOrders.filter((o) => o.status === "pending");
+        const acceptedOrders = firestoreOrders.filter((o) => o.status === "accepted");
         localStorage.setItem("pendingOrders", JSON.stringify(pendingOrders));
         localStorage.setItem("acceptedOrders", JSON.stringify(acceptedOrders));
         loadOrders();
@@ -119,27 +79,19 @@ function listenForOrders() {
   }
 }
 
-// Fetch active data from Firestore and update the control panel layout
 async function syncAllDataFromFirestore() {
   if (window.db && window.firestore) {
     try {
-      // Fetch products
       const productsSnap = await window.firestore.getDocs(window.firestore.collection(window.db, "products"));
       let fetchedProducts = [];
-      productsSnap.forEach((doc) => {
-        fetchedProducts.push({ firestoreId: doc.id, ...doc.data() });
-      });
+      productsSnap.forEach((doc) => fetchedProducts.push({ firestoreId: doc.id, ...doc.data() }));
       localStorage.setItem("products", JSON.stringify(fetchedProducts));
 
-      // Fetch categories
       const categoriesSnap = await window.firestore.getDocs(window.firestore.collection(window.db, "categories"));
       let fetchedCategories = [];
-      categoriesSnap.forEach((doc) => {
-        fetchedCategories.push({ firestoreId: doc.id, ...doc.data() });
-      });
+      categoriesSnap.forEach((doc) => fetchedCategories.push({ firestoreId: doc.id, ...doc.data() }));
       localStorage.setItem("categories", JSON.stringify(fetchedCategories));
 
-      // Fetch banners
       if (window.firestore.getDoc) {
         const bannersDoc = await window.firestore.getDoc(window.firestore.doc(window.db, "meta", "banners"));
         if (bannersDoc.exists && bannersDoc.exists()) {
@@ -147,14 +99,12 @@ async function syncAllDataFromFirestore() {
         }
       }
 
-      // Update UI elements
       populateCategorySelects();
       loadAdminProducts();
       loadAdminCategories();
       loadAdminBanners();
-      console.log("Data synced successfully from Firestore");
     } catch (e) {
-      console.error("Error syncing data from Firestore:", e);
+      console.error("خطأ في المزامنة:", e);
     }
   }
 }
@@ -166,25 +116,17 @@ function initTabs() {
 
   tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
-      // Remove active states from all tabs
       tabs.forEach((t) => t.classList.remove("active"));
       contents.forEach((c) => c.classList.remove("active"));
 
-      // Add active state to the selected tab
       tab.classList.add("active");
       const targetId = tab.dataset.tab + "-tab";
       document.getElementById(targetId).classList.add("active");
 
-      // Update header title context
-      if (headerTitle) {
-        headerTitle.innerText = tab.innerText;
-      }
+      if (headerTitle) headerTitle.innerText = tab.innerText;
 
-      // Close mobile navigation drawer if open upon selection
       const sidebar = document.getElementById("sidebar");
-      if (window.innerWidth <= 768 && sidebar) {
-        sidebar.classList.remove("open");
-      }
+      if (window.innerWidth <= 768 && sidebar) sidebar.classList.remove("open");
     });
   });
 }
@@ -192,11 +134,8 @@ function initTabs() {
 function initSidebar() {
   const toggleBtn = document.getElementById("toggle-sidebar");
   const sidebar = document.getElementById("sidebar");
-
   if (toggleBtn && sidebar) {
-    toggleBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("open");
-    });
+    toggleBtn.addEventListener("click", () => sidebar.classList.toggle("open"));
   }
 }
 
@@ -204,85 +143,60 @@ function loadOrders() {
   const container = document.getElementById("orders-container");
   if (!container) return;
 
-  let pendingOrders = [];
-  try {
-    pendingOrders = JSON.parse(localStorage.getItem("pendingOrders") || "[]");
-  } catch (e) {
-    console.error("Error parsing pending orders layout", e);
-  }
+  let pendingOrders = JSON.parse(localStorage.getItem("pendingOrders") || "[]");
 
   if (pendingOrders.length === 0) {
-    container.innerHTML =
-      '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1; font-size: 1.1rem;">No pending orders available at the moment...</div>';
+    container.innerHTML = '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1; font-size: 1.1rem; font-weight:700;">لا توجد طلبات جديدة قيد الانتظار حالياً...</div>';
     return;
   }
 
-  // Sort orders chronologically from newest to oldest
-  pendingOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
-
+  pendingOrders.sort((a, b) => new Date(b.createdAt?.toDate?.() || b.date) - new Date(a.createdAt?.toDate?.() || a.date));
   container.innerHTML = "";
 
-  // Fetch fallback customer variables from client device memory
-  const cName = localStorage.getItem("checkoutName") || "Not Provided";
-  const cAddress = localStorage.getItem("checkoutAddress") || "Not Provided";
-  const cPhone = localStorage.getItem("checkoutPhone") || "Not Provided";
-  const shippingFee = 3000;
-
-  const colors = [
-    "#e0f2fe",
-    "#dcfce7",
-    "#fef3c7",
-    "#fee2e2",
-    "#f3e8ff",
-    "#ffedd5",
-  ];
-
-  pendingOrders.forEach((order, index) => {
-    const orderDateObj = new Date(order.date);
-    const dateOptions = {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-    const orderDate = orderDateObj.toLocaleDateString("en-US", dateOptions);
-
+  pendingOrders.forEach((order) => {
+    // FIX: Pulling correct values directly from the database entry rather than local client cache
+    const cName = order.customerName || "غير متوفر";
+    const cAddress = order.customerAddress || "غير متوفر";
+    const cPhone = order.customerPhone || "غير متوفر";
+    const cProvince = order.customerProvince || "غير متوفر";
+    
     let subtotal = 0;
     let itemsHtml = "";
-    order.items.forEach((item) => {
-      const priceNum = parseInt(item.price.replace(/[^\d]/g, ""));
+    
+    (order.items || []).forEach((item) => {
+      const priceNum = typeof item.price === "string" ? parseInt(item.price.replace(/[^\d]/g, "")) : parseInt(item.price);
       subtotal += priceNum * item.quantity;
       itemsHtml += `
             <div class="order-item">
                 <span>${item.name} (${item.quantity}x)</span>
-                <span>${(priceNum * item.quantity).toLocaleString("en-US")} IQD</span>
+                <span>${(priceNum * item.quantity).toLocaleString("en-US")} د.ع</span>
             </div>`;
     });
+    
+    const shippingFee = order.shippingCost || 0;
     const total = subtotal + shippingFee;
 
     const card = document.createElement("div");
     card.className = "order-card";
-    card.style.backgroundColor = colors[index % colors.length];
     card.innerHTML = `
             <div class="order-header">
-                <span class="order-id">Order #${order.id.toString().slice(-5)}</span>
-                <span class="order-date">${orderDate}</span>
+                <span class="order-id">طلب رقم ${order.id}</span>
             </div>
             <div class="order-customer">
-                <div><strong>Name:</strong> ${cName}</div>
-                <div><strong>Address:</strong> ${cAddress}</div>
-                <div><strong>Phone:</strong> <span dir="ltr">${cPhone}</span></div>
+                <div><strong>الاسم:</strong> ${cName}</div>
+                <div><strong>رقم الهاتف:</strong> <span dir="ltr">${cPhone}</span></div>
+                <div><strong>المحافظة:</strong> ${cProvince}</div>
+                <div><strong>العنوان:</strong> ${cAddress}</div>
             </div>
             <div class="order-items">
                 ${itemsHtml}
             </div>
             <div class="order-total">
-                Total Price: ${total.toLocaleString("en-US")} IQD
+                المجموع الكلي مع التوصيل: ${total.toLocaleString("en-US")} د.ع
             </div>
             <div class="order-actions">
-                <button class="btn btn-accept process-order-btn" data-id="${order.id}" data-action="accept">Accept</button>
-                <button class="btn btn-reject process-order-btn" data-id="${order.id}" data-action="reject">Reject</button>
+                <button class="btn btn-accept process-order-btn" data-id="${order.id}" data-action="accept">تأكيد وقبول الطلب</button>
+                <button class="btn btn-reject process-order-btn" data-id="${order.id}" data-action="reject">رفض الطلب</button>
             </div>
         `;
     container.appendChild(card);
@@ -291,11 +205,9 @@ function loadOrders() {
   const processBtns = container.querySelectorAll(".process-order-btn");
   processBtns.forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      const id = parseInt(e.currentTarget.getAttribute("data-id"));
+      const id = e.currentTarget.getAttribute("data-id");
       const action = e.currentTarget.getAttribute("data-action");
-      if (typeof window.processOrder === "function") {
-        window.processOrder(id, action);
-      }
+      if (typeof window.processOrder === "function") window.processOrder(id, action);
     });
   });
 }
@@ -310,35 +222,14 @@ window.processOrder = async function (id, action) {
     if (window.db && window.firestore && order.firestoreId) {
       try {
         if (action === "accept") {
-          await window.firestore.updateDoc(
-            window.firestore.doc(window.db, "orders", order.firestoreId),
-            { status: "accepted" },
-          );
+          await window.firestore.updateDoc(window.firestore.doc(window.db, "orders", order.firestoreId), { status: "accepted" });
         } else {
-          await window.firestore.deleteDoc(
-            window.firestore.doc(window.db, "orders", order.firestoreId),
-          );
+          await window.firestore.deleteDoc(window.firestore.doc(window.db, "orders", order.firestoreId));
         }
       } catch (e) {
         console.error("Firestore update error: ", e);
       }
-    } else {
-      pendingOrders.splice(orderIndex, 1);
-      localStorage.setItem("pendingOrders", JSON.stringify(pendingOrders));
-
-      if (action === "accept") {
-        let acceptedOrders = JSON.parse(
-          localStorage.getItem("acceptedOrders") || "[]",
-        );
-        acceptedOrders.push(order);
-        localStorage.setItem("acceptedOrders", JSON.stringify(acceptedOrders));
-      }
     }
-  }
-
-  loadOrders();
-  if (typeof loadAcceptedOrders === "function") {
-    loadAcceptedOrders();
   }
 };
 
@@ -346,50 +237,35 @@ function loadAcceptedOrders() {
   const container = document.getElementById("accepted-orders-container");
   if (!container) return;
 
-  let acceptedOrders = [];
-  try {
-    acceptedOrders = JSON.parse(localStorage.getItem("acceptedOrders") || "[]");
-  } catch (e) {
-    console.error("Error reading accepted orders", e);
-  }
+  let acceptedOrders = JSON.parse(localStorage.getItem("acceptedOrders") || "[]");
 
   if (acceptedOrders.length === 0) {
-    container.innerHTML =
-      '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1; font-size: 1.1rem;">No accepted orders available at the moment...</div>';
+    container.innerHTML = '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1; font-size: 1.1rem; font-weight:700;">لا توجد طلبات منجزة في السجل حالياً...</div>';
     return;
   }
 
-  acceptedOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
-
+  acceptedOrders.sort((a, b) => new Date(b.createdAt?.toDate?.() || b.date) - new Date(a.createdAt?.toDate?.() || a.date));
   container.innerHTML = "";
 
-  const cName = localStorage.getItem("checkoutName") || "Not Provided";
-  const cAddress = localStorage.getItem("checkoutAddress") || "Not Provided";
-  const cPhone = localStorage.getItem("checkoutPhone") || "Not Provided";
-  const shippingFee = parseInt(localStorage.getItem("deliveryCost")) || 3000;
-
   acceptedOrders.forEach((order) => {
-    const orderDateObj = new Date(order.date);
-    const dateOptions = {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-    const orderDate = orderDateObj.toLocaleDateString("en-US", dateOptions);
+    const cName = order.customerName || "غير متوفر";
+    const cAddress = order.customerAddress || "غير متوفر";
+    const cPhone = order.customerPhone || "غير متوفر";
+    const cProvince = order.customerProvince || "غير متوفر";
 
     let subtotal = 0;
     let itemsHtml = "";
-    order.items.forEach((item) => {
-      const priceNum = parseInt(item.price.replace(/[^\d]/g, ""));
+    (order.items || []).forEach((item) => {
+      const priceNum = typeof item.price === "string" ? parseInt(item.price.replace(/[^\d]/g, "")) : parseInt(item.price);
       subtotal += priceNum * item.quantity;
       itemsHtml += `
             <div class="order-item">
                 <span>${item.name} (${item.quantity}x)</span>
-                <span>${(priceNum * item.quantity).toLocaleString("en-US")} IQD</span>
+                <span>${(priceNum * item.quantity).toLocaleString("en-US")} د.ع</span>
             </div>`;
     });
+    
+    const shippingFee = order.shippingCost || 0;
     const total = subtotal + shippingFee;
 
     const card = document.createElement("div");
@@ -397,22 +273,22 @@ function loadAcceptedOrders() {
     card.style.border = "1px solid #10b981";
     card.innerHTML = `
             <div class="order-header">
-                <span class="order-id">Order #${order.id.toString().slice(-5)}</span>
-                <span class="order-date">${orderDate}</span>
+                <span class="order-id">طلب رقم ${order.id}</span>
             </div>
             <div class="order-customer">
-                <div><strong>Name:</strong> ${cName}</div>
-                <div><strong>Address:</strong> ${cAddress}</div>
-                <div><strong>Phone:</strong> <span dir="ltr">${cPhone}</span></div>
+                <div><strong>الاسم:</strong> ${cName}</div>
+                <div><strong>رقم الهاتف:</strong> <span dir="ltr">${cPhone}</span></div>
+                <div><strong>المحافظة:</strong> ${cProvince}</div>
+                <div><strong>العنوان:</strong> ${cAddress}</div>
             </div>
             <div class="order-items">
                 ${itemsHtml}
             </div>
-            <div class="order-total">
-                Total Price: ${total.toLocaleString("en-US")} IQD
+            <div class="order-total" style="color: #10b981;">
+                المبلغ المقبوض: ${total.toLocaleString("en-US")} د.ع
             </div>
             <div class="order-actions">
-                <button class="btn btn-reject delete-accepted-order-btn" data-id="${order.id}">Delete History Log</button>
+                <button class="btn btn-reject delete-accepted-order-btn" data-id="${order.id}">حذف نهائي من السجل</button>
             </div>
         `;
     container.appendChild(card);
@@ -421,44 +297,32 @@ function loadAcceptedOrders() {
   const deleteBtns = container.querySelectorAll(".delete-accepted-order-btn");
   deleteBtns.forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      const id = parseInt(e.currentTarget.getAttribute("data-id"));
-      if (typeof window.deleteAcceptedOrder === "function") {
-        window.deleteAcceptedOrder(id);
-      }
+      const id = e.currentTarget.getAttribute("data-id");
+      if (typeof window.deleteAcceptedOrder === "function") window.deleteAcceptedOrder(id);
     });
   });
 }
 
 window.deleteAcceptedOrder = async function (id) {
-  let acceptedOrders = JSON.parse(
-    localStorage.getItem("acceptedOrders") || "[]",
-  );
+  let acceptedOrders = JSON.parse(localStorage.getItem("acceptedOrders") || "[]");
   const orderIndex = acceptedOrders.findIndex((o) => o.id === id);
   if (orderIndex !== -1) {
     const order = acceptedOrders[orderIndex];
     if (window.db && window.firestore && order.firestoreId) {
       try {
-        await window.firestore.deleteDoc(
-          window.firestore.doc(window.db, "orders", order.firestoreId),
-        );
+        await window.firestore.deleteDoc(window.firestore.doc(window.db, "orders", order.firestoreId));
       } catch (e) {
         console.error("Firestore delete error", e);
       }
-    } else {
-      acceptedOrders.splice(orderIndex, 1);
-      localStorage.setItem("acceptedOrders", JSON.stringify(acceptedOrders));
-      loadAcceptedOrders();
     }
   }
 };
 
-// ------------------------------------
-// Product Management Module
-// ------------------------------------
-
+// ===================================
+// Product Management
+// ===================================
 function populateCategorySelects() {
   let categories = JSON.parse(localStorage.getItem("categories")) || [];
-
   const newSelect = document.getElementById("new-product-category");
   const editSelect = document.getElementById("edit-product-category");
 
@@ -483,12 +347,12 @@ function initProductsTab() {
     addProductBtn.addEventListener("click", () => {
       if (formContainer.style.display === "none") {
         formContainer.style.display = "block";
-        addProductBtn.innerText = "Cancel";
+        addProductBtn.innerText = "إلغاء العملية";
         addProductBtn.style.background = "#ef4444";
       } else {
         formContainer.style.display = "none";
-        addProductBtn.innerText = "Add New Product";
-        addProductBtn.style.background = "#10b981";
+        addProductBtn.innerText = "إضافة منتج جديد";
+        addProductBtn.style.background = "var(--primary)";
       }
     });
   }
@@ -503,63 +367,46 @@ function initProductsTab() {
       const imageFile = imageInput.files[0];
 
       if (!name || !price || !category || !imageFile) {
-        alert("Please complete all fields and choose an item image!");
+        alert("يرجى ملء جميع الحقول ورفع صورة للمنتج!");
         return;
       }
 
-      saveBtn.innerText = "Saving item state...";
+      saveBtn.innerText = "جاري الحفظ والرفع...";
       saveBtn.disabled = true;
 
       compressImageFile(imageFile, function (compressedBase64) {
-        try {
-          let products = [];
-          try {
-            const saved = localStorage.getItem("products");
-            if (saved) products = JSON.parse(saved);
-          } catch (e) {}
+        let products = JSON.parse(localStorage.getItem("products")) || [];
+        const newId = products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
+        const formattedPrice = parseInt(price).toLocaleString("en-US") + " د.ع";
 
-          if (!products) {
-            products = [];
-          }
+        const newProduct = {
+          id: newId,
+          name: name,
+          price: formattedPrice,
+          image: compressedBase64,
+          rating: 5,
+          category: category,
+          description: description
+        };
 
-          const newId =
-            products.length > 0
-              ? Math.max(...products.map((p) => p.id)) + 1
-              : 1;
-          const formattedPrice =
-            parseInt(price).toLocaleString("en-US") + " IQD";
+        products.push(newProduct);
+        localStorage.setItem("products", JSON.stringify(products));
+        syncItemToFirestore("products", newProduct, "add");
 
-          const newProduct = {
-            id: newId,
-            name: name,
-            price: formattedPrice,
-            image: compressedBase64,
-            rating: 5,
-            category: category,
-            description: description
-          };
+        document.getElementById("new-product-name").value = "";
+        document.getElementById("new-product-price").value = "";
+        document.getElementById("new-product-image").value = "";
+        document.getElementById("new-product-desc").value = "";
+        
+        formContainer.style.display = "none";
+        addProductBtn.innerText = "إضافة منتج جديد";
+        addProductBtn.style.background = "var(--primary)";
 
-          products.push(newProduct);
-          localStorage.setItem("products", JSON.stringify(products));
-          syncItemToFirestore("products", newProduct, "add");
-
-          document.getElementById("new-product-name").value = "";
-          document.getElementById("new-product-price").value = "";
-          document.getElementById("new-product-image").value = "";
-          document.getElementById("new-product-desc").value = "";
-          formContainer.style.display = "none";
-          addProductBtn.innerText = "Add New Product";
-          addProductBtn.style.background = "#10b981";
-
-          alert("Product added successfully!");
-          loadAdminProducts();
-        } catch (err) {
-          console.error(err);
-          alert("Error! Storage capacity limit hit.");
-        } finally {
-          saveBtn.innerText = "Save Product";
-          saveBtn.disabled = false;
-        }
+        alert("تم حفظ المنتج بنجاح!");
+        loadAdminProducts();
+        
+        saveBtn.innerText = "حفظ المنتج";
+        saveBtn.disabled = false;
       });
     });
   }
@@ -573,11 +420,7 @@ function loadAdminProducts() {
     const cancelBtn = document.getElementById("cancel-edit-btn");
     const updateBtn = document.getElementById("update-product-btn");
 
-    if (cancelBtn) {
-      cancelBtn.addEventListener("click", () => {
-        document.getElementById("edit-product-form").style.display = "none";
-      });
-    }
+    if (cancelBtn) cancelBtn.addEventListener("click", () => document.getElementById("edit-product-form").style.display = "none");
 
     if (updateBtn) {
       updateBtn.addEventListener("click", () => {
@@ -590,13 +433,12 @@ function loadAdminProducts() {
         const imageFile = imageInput.files[0];
 
         if (!name || !price || !category) {
-          alert("Please fill out all mandatory core fields!");
+          alert("يرجى ملء جميع الحقول المطلوبة!");
           return;
         }
 
         let products = JSON.parse(localStorage.getItem("products")) || [];
-
-        const formattedPrice = parseInt(price).toLocaleString("en-US") + " IQD";
+        const formattedPrice = parseInt(price).toLocaleString("en-US") + " د.ع";
         const index = products.findIndex((p) => p.id === id);
 
         if (index !== -1) {
@@ -605,38 +447,25 @@ function loadAdminProducts() {
           products[index].category = category;
           products[index].description = description;
 
+          const finishUpdate = () => {
+            localStorage.setItem("products", JSON.stringify(products));
+            syncItemToFirestore("products", products[index], "update");
+            document.getElementById("edit-product-form").style.display = "none";
+            loadAdminProducts();
+            alert("تم حفظ التعديلات بنجاح!");
+            updateBtn.innerText = "حفظ التعديلات";
+            updateBtn.disabled = false;
+          };
+
           if (imageFile) {
-            updateBtn.innerText = "Saving changes...";
+            updateBtn.innerText = "جاري تحديث الصورة...";
             updateBtn.disabled = true;
             compressImageFile(imageFile, function (compressedBase64) {
               products[index].image = compressedBase64;
-              try {
-                localStorage.setItem("products", JSON.stringify(products));
-                syncItemToFirestore("products", products[index], "update");
-                document.getElementById("edit-product-form").style.display =
-                  "none";
-                loadAdminProducts();
-                alert("Modifications saved successfully!");
-              } catch (err) {
-                console.error(err);
-                alert("Error! Storage capacity limit hit.");
-              } finally {
-                updateBtn.innerText = "Save edits";
-                updateBtn.disabled = false;
-              }
+              finishUpdate();
             });
           } else {
-            try {
-              localStorage.setItem("products", JSON.stringify(products));
-              syncItemToFirestore("products", products[index], "update");
-              document.getElementById("edit-product-form").style.display =
-                "none";
-              loadAdminProducts();
-              alert("Modifications saved successfully!");
-            } catch (err) {
-              console.error(err);
-              alert("Error! Storage capacity limit hit.");
-            }
+            finishUpdate();
           }
         }
       });
@@ -645,12 +474,10 @@ function loadAdminProducts() {
   }
 
   let products = JSON.parse(localStorage.getItem("products")) || [];
-
   container.innerHTML = "";
 
   if (products.length === 0) {
-    container.innerHTML =
-      '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1;">No products found inside directory.</div>';
+    container.innerHTML = '<div style="text-align:center; padding: 3rem; color:var(--text-muted); grid-column: 1 / -1; font-weight: 700;">لا توجد منتجات مسجلة في قاعدة البيانات حالياً.</div>';
     return;
   }
 
@@ -662,13 +489,13 @@ function loadAdminProducts() {
                 <img src="${product.image}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
                 <div>
                     <h4 style="color: var(--primary); margin-bottom: 0.25rem;">${product.name}</h4>
-                    <div style="color: var(--text-main); font-weight: 600;">${product.price}</div>
-                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top:0.25rem;">Category: ${getCategoryName(product.category)}</div>
+                    <div style="color: var(--text-main); font-weight: 800;">${product.price}</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top:0.25rem;">الفئة: ${getCategoryName(product.category)}</div>
                 </div>
             </div>
             <div class="order-actions" style="margin-top: auto;">
-                <button class="btn btn-accept edit-product-btn" data-id="${product.id}" style="background: var(--primary);">Edit</button>
-                <button class="btn btn-reject delete-product-btn" data-id="${product.id}">Delete</button>
+                <button class="btn btn-accept edit-product-btn" data-id="${product.id}">تعديل البيانات</button>
+                <button class="btn btn-reject delete-product-btn" data-id="${product.id}">حذف نهائي</button>
             </div>
         `;
     container.appendChild(card);
@@ -692,7 +519,7 @@ function loadAdminProducts() {
 }
 
 function getCategoryName(id) {
-  if (id === "all") return "All";
+  if (id === "all") return "الكل";
   let categories = JSON.parse(localStorage.getItem("categories")) || [];
   const cat = categories.find((c) => c.id === id);
   return cat ? cat.name : id;
@@ -700,20 +527,15 @@ function getCategoryName(id) {
 
 window.deleteProduct = function (id) {
   let products = JSON.parse(localStorage.getItem("products")) || [];
-
   const productToDelete = products.find((p) => p.id === id);
   products = products.filter((p) => p.id !== id);
   localStorage.setItem("products", JSON.stringify(products));
-  if (productToDelete) {
-    syncItemToFirestore("products", productToDelete, "delete");
-  }
-
+  if (productToDelete) syncItemToFirestore("products", productToDelete, "delete");
   loadAdminProducts();
 };
 
 window.editProduct = function (id) {
   let products = JSON.parse(localStorage.getItem("products")) || [];
-
   const product = products.find((p) => p.id === id);
   if (!product) return;
 
@@ -726,15 +548,12 @@ window.editProduct = function (id) {
   document.getElementById("edit-product-desc").value = product.description || "";
 
   document.getElementById("edit-product-form").style.display = "block";
-  document
-    .getElementById("edit-product-form")
-    .scrollIntoView({ behavior: "smooth", block: "center" });
+  document.getElementById("edit-product-form").scrollIntoView({ behavior: "smooth", block: "center" });
 };
 
-// ------------------------------------
-// Banner Management Module
-// ------------------------------------
-
+// ===================================
+// Banners Management
+// ===================================
 function compressImageFile(file, callback) {
   const reader = new FileReader();
   reader.onload = function (e) {
@@ -744,39 +563,28 @@ function compressImageFile(file, callback) {
         const canvas = document.createElement("canvas");
         let width = img.width;
         let height = img.height;
-
         const MAX_WIDTH = 1000;
         if (width > MAX_WIDTH) {
           height = Math.round((height * MAX_WIDTH) / width);
           width = MAX_WIDTH;
         }
-
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
-
         callback(canvas.toDataURL("image/jpeg", 0.6));
       } catch (err) {
-        console.error("Compression error:", err);
-        callback(e.target.result); // fallback to original state
+        callback(e.target.result); 
       }
     };
-    img.onerror = function () {
-      callback(e.target.result);
-    };
+    img.onerror = function () { callback(e.target.result); };
     img.src = e.target.result;
-  };
-  reader.onerror = function () {
-    alert("Failed to read selected media file image frame.");
-    callback(null);
   };
   reader.readAsDataURL(file);
 }
 
 function initBannersTab() {
   loadAdminBanners();
-
   const addBannerBtn = document.getElementById("add-banner-btn");
   const formContainer = document.getElementById("add-banner-form");
   const saveBtn = document.getElementById("save-banner-btn");
@@ -785,12 +593,12 @@ function initBannersTab() {
     addBannerBtn.addEventListener("click", () => {
       if (formContainer.style.display === "none") {
         formContainer.style.display = "block";
-        addBannerBtn.innerText = "Cancel";
+        addBannerBtn.innerText = "إلغاء العملية";
         addBannerBtn.style.background = "#ef4444";
       } else {
         formContainer.style.display = "none";
-        addBannerBtn.innerText = "Add New Banner";
-        addBannerBtn.style.background = "#10b981";
+        addBannerBtn.innerText = "إضافة لافتة جديدة";
+        addBannerBtn.style.background = "var(--primary)";
       }
     });
   }
@@ -799,58 +607,32 @@ function initBannersTab() {
     saveBtn.addEventListener("click", () => {
       const imageInput = document.getElementById("new-banner-image");
       const imageFile = imageInput.files[0];
-
       if (!imageFile) {
-        alert("Please specify a display image to set as banner element!");
-        return;
+        alert("يرجى إرفاق صورة أولاً!"); return;
       }
 
-      saveBtn.innerText = "Saving array slot...";
+      saveBtn.innerText = "جاري الحفظ...";
       saveBtn.disabled = true;
 
       compressImageFile(imageFile, function (compressedBase64) {
-        if (!compressedBase64) {
-          saveBtn.innerText = "Save Banner";
-          saveBtn.disabled = false;
-          return;
+        if (!compressedBase64) return;
+        let banners = JSON.parse(localStorage.getItem("banners") || "[]");
+        banners.push(compressedBase64);
+        localStorage.setItem("banners", JSON.stringify(banners));
+
+        if (window.db && window.firestore) {
+          window.firestore.setDoc(window.firestore.doc(window.db, "meta", "banners"), { data: banners })
+            .then(() => updateAdminCacheVersion());
         }
-        try {
-          let banners = [];
-          const saved = localStorage.getItem("banners");
-          if (saved) {
-            banners = JSON.parse(saved);
-          } else {
-            banners = [];
-          }
 
-          banners.push(compressedBase64);
-          localStorage.setItem("banners", JSON.stringify(banners));
-
-          if (window.db && window.firestore) {
-            window.firestore
-              .setDoc(window.firestore.doc(window.db, "meta", "banners"), {
-                data: banners,
-              })
-              .then(() => updateAdminCacheVersion())
-              .catch((e) => console.error("Error saving banners:", e));
-          }
-
-          document.getElementById("new-banner-image").value = "";
-          formContainer.style.display = "none";
-          addBannerBtn.innerText = "Add New Banner";
-          addBannerBtn.style.background = "#10b981";
-
-          alert("Banner registered live successfully!");
-          loadAdminBanners();
-        } catch (error) {
-          console.error(error);
-          alert(
-            "Write block failed! Storage map capacity full. Try clearing old layout records or item slots.",
-          );
-        } finally {
-          saveBtn.innerText = "Save Banner";
-          saveBtn.disabled = false;
-        }
+        document.getElementById("new-banner-image").value = "";
+        formContainer.style.display = "none";
+        addBannerBtn.innerText = "إضافة لافتة جديدة";
+        addBannerBtn.style.background = "var(--primary)";
+        alert("تم رفع اللافتة بنجاح!");
+        loadAdminBanners();
+        saveBtn.innerText = "حفظ اللافتة";
+        saveBtn.disabled = false;
       });
     });
   }
@@ -860,23 +642,11 @@ function loadAdminBanners() {
   const container = document.getElementById("admin-banners-container");
   if (!container) return;
 
-  let banners = [];
-  const saved = localStorage.getItem("banners");
-  if (saved) {
-    try {
-      banners = JSON.parse(saved);
-    } catch (e) {
-      banners = [];
-    }
-  } else {
-    banners = [];
-  }
-
+  let banners = JSON.parse(localStorage.getItem("banners") || "[]");
   container.innerHTML = "";
 
   if (banners.length === 0) {
-    container.innerHTML =
-      '<div style="text-align:center; padding: 3rem; color:var(--text-muted);">No layout banners active inside storage.</div>';
+    container.innerHTML = '<div style="text-align:center; padding: 3rem; color:var(--text-muted); font-weight: 700;">لا توجد لافتات إعلانية فعالة.</div>';
     return;
   }
 
@@ -891,7 +661,7 @@ function loadAdminBanners() {
     card.innerHTML = `
             <img src="${bannerUrl}" style="height: 100px; width: auto; max-width: 70%; object-fit: cover; border-radius: 8px;">
             <div class="order-actions" style="margin: 0; min-width: 100px;">
-                <button class="btn btn-reject delete-banner-btn" data-index="${index}">Delete</button>
+                <button class="btn btn-reject delete-banner-btn" data-index="${index}">حذف</button>
             </div>
         `;
     container.appendChild(card);
@@ -901,56 +671,27 @@ function loadAdminBanners() {
   deleteBtns.forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const index = parseInt(e.currentTarget.getAttribute("data-index"));
-      if (typeof window.deleteBanner === "function") {
-        window.deleteBanner(index);
-      } else {
-        alert("Fatal Error: Matrix element deletion handler reference missing!");
-      }
+      if (typeof window.deleteBanner === "function") window.deleteBanner(index);
     });
   });
 }
 
 window.deleteBanner = function (index) {
-  try {
-    let banners = [];
-    const saved = localStorage.getItem("banners");
-    if (saved) {
-      try {
-        banners = JSON.parse(saved);
-      } catch (e) {
-        banners = [];
-      }
-    } else {
-      banners = [];
+  let banners = JSON.parse(localStorage.getItem("banners") || "[]");
+  if (index >= 0 && index < banners.length) {
+    banners.splice(index, 1);
+    localStorage.setItem("banners", JSON.stringify(banners));
+    if (window.db && window.firestore) {
+      window.firestore.setDoc(window.firestore.doc(window.db, "meta", "banners"), { data: banners })
+        .then(() => updateAdminCacheVersion());
     }
-
-    if (index >= 0 && index < banners.length) {
-      banners.splice(index, 1);
-      try {
-        localStorage.setItem("banners", JSON.stringify(banners));
-        if (window.db && window.firestore) {
-          window.firestore
-            .setDoc(window.firestore.doc(window.db, "meta", "banners"), {
-              data: banners,
-            })
-            .then(() => updateAdminCacheVersion())
-            .catch((e) => console.error("Error saving banners:", e));
-        }
-      } catch (e) {
-        console.error(e);
-        alert("Write operation failed! Local state full. Reference log: " + e.message);
-        return;
-      }
-    }
-
-    loadAdminBanners();
-  } catch (error) {
-    alert("Process logic crashed during deletion: " + error.message);
-    console.error(error);
   }
+  loadAdminBanners();
 };
 
-// Category Management Functions
+// ===================================
+// Categories Management
+// ===================================
 function initCategoriesTab() {
   const addCategoryBtn = document.getElementById("add-category-btn");
   const addCategoryForm = document.getElementById("add-category-form");
@@ -960,12 +701,9 @@ function initCategoriesTab() {
     addCategoryBtn.addEventListener("click", () => {
       const isVisible = addCategoryForm.style.display === "block";
       addCategoryForm.style.display = isVisible ? "none" : "block";
-      addCategoryBtn.innerText = isVisible
-        ? "Add new category"
-        : "Cancel Action";
-      if (!isVisible) {
-        document.getElementById("edit-category-form").style.display = "none";
-      }
+      addCategoryBtn.innerText = isVisible ? "إضافة فئة جديدة" : "إلغاء العملية";
+      addCategoryBtn.style.background = isVisible ? "var(--primary)" : "#ef4444";
+      if (!isVisible) document.getElementById("edit-category-form").style.display = "none";
     });
   }
 
@@ -975,97 +713,70 @@ function initCategoriesTab() {
       const imageFile = document.getElementById("new-category-image").files[0];
 
       if (!name) {
-        alert("Please supply a recognizable label name string for the Category.");
-        return;
+        alert("يرجى إدخال اسم للفئة."); return;
       }
 
       const id = "cat_" + Date.now();
-
-      saveCategoryBtn.innerText = "Saving category map...";
+      saveCategoryBtn.innerText = "جاري الحفظ...";
       saveCategoryBtn.disabled = true;
 
       const handleSave = (imgUrl) => {
         let categories = JSON.parse(localStorage.getItem("categories")) || [];
-
         const newCat = { id, name, image: imgUrl };
         categories.push(newCat);
-        try {
-          localStorage.setItem("categories", JSON.stringify(categories));
-          syncItemToFirestore("categories", newCat, "add");
+        localStorage.setItem("categories", JSON.stringify(categories));
+        syncItemToFirestore("categories", newCat, "add");
 
-          document.getElementById("new-category-name").value = "";
-          document.getElementById("new-category-image").value = "";
-          addCategoryForm.style.display = "none";
-          addCategoryBtn.innerText = "Add new category";
+        document.getElementById("new-category-name").value = "";
+        document.getElementById("new-category-image").value = "";
+        addCategoryForm.style.display = "none";
+        addCategoryBtn.innerText = "إضافة فئة جديدة";
+        addCategoryBtn.style.background = "var(--primary)";
 
-          loadAdminCategories();
-        } catch (e) {
-          alert("Storage limit ceiling hit! Please remove alternative elements before adding.");
-        }
-        saveCategoryBtn.innerText = "Save category";
+        loadAdminCategories();
+        saveCategoryBtn.innerText = "حفظ الفئة";
         saveCategoryBtn.disabled = false;
       };
 
-      if (imageFile) {
-        compressImageFile(imageFile, handleSave);
-      } else {
-        handleSave("https://cdn-icons-png.flaticon.com/512/149/149852.png"); // Fallback placeholder vector graphic image
-      }
+      if (imageFile) compressImageFile(imageFile, handleSave);
+      else handleSave("https://cdn-icons-png.flaticon.com/512/149/149852.png");
     });
   }
 
   const cancelEditBtn = document.getElementById("cancel-category-edit-btn");
-  if (cancelEditBtn) {
-    cancelEditBtn.addEventListener("click", () => {
-      document.getElementById("edit-category-form").style.display = "none";
-    });
-  }
+  if (cancelEditBtn) cancelEditBtn.addEventListener("click", () => document.getElementById("edit-category-form").style.display = "none");
 
   const updateBtn = document.getElementById("update-category-btn");
   if (updateBtn) {
     updateBtn.addEventListener("click", () => {
-      const originalId = document.getElementById(
-        "edit-category-original-id",
-      ).value;
+      const originalId = document.getElementById("edit-category-original-id").value;
       const name = document.getElementById("edit-category-name").value.trim();
       const imageFile = document.getElementById("edit-category-image").files[0];
 
-      if (!name) {
-        alert("Category label key missing context text description.");
-        return;
-      }
+      if (!name) { alert("يرجى كتابة اسم الفئة!"); return; }
 
       let categories = JSON.parse(localStorage.getItem("categories")) || [];
-
       const catIndex = categories.findIndex((c) => c.id === originalId);
       if (catIndex === -1) return;
 
-      updateBtn.innerText = "Updating collection index data...";
+      updateBtn.innerText = "جاري التحديث...";
       updateBtn.disabled = true;
 
       const handleUpdate = (imgUrl) => {
         categories[catIndex].name = name;
-        if (imgUrl) {
-          categories[catIndex].image = imgUrl;
-        }
-
-        try {
-          localStorage.setItem("categories", JSON.stringify(categories));
-          syncItemToFirestore("categories", categories[catIndex], "update");
-          document.getElementById("edit-category-form").style.display = "none";
-          loadAdminCategories();
-        } catch (e) {
-          alert("Critical error encountered writing map context data onto device.");
-        }
-        updateBtn.innerText = "Save edits";
+        if (imgUrl) categories[catIndex].image = imgUrl;
+        
+        localStorage.setItem("categories", JSON.stringify(categories));
+        syncItemToFirestore("categories", categories[catIndex], "update");
+        document.getElementById("edit-category-form").style.display = "none";
+        loadAdminCategories();
+        
+        updateBtn.innerText = "حفظ التعديلات";
         updateBtn.disabled = false;
       };
 
-      if (imageFile) {
-        compressImageFile(imageFile, handleUpdate);
-      } else {
-        handleUpdate(null);
-      }
+      if (imageFile) compressImageFile(imageFile, handleUpdate);
+      else handleUpdate(null);
     });
   }
 
@@ -1079,12 +790,10 @@ function loadAdminCategories() {
   if (!container) return;
 
   let categories = JSON.parse(localStorage.getItem("categories")) || [];
-
   container.innerHTML = "";
 
   if (categories.length === 0) {
-    container.innerHTML =
-      '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">No active collection records found inside memory.</div>';
+    container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; font-weight: 700; color: var(--text-muted);">لا توجد فئات حالياً، يرجى إضافة فئة للبدء.</div>';
     return;
   }
 
@@ -1096,15 +805,15 @@ function loadAdminCategories() {
 
     card.innerHTML = `
             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                <img src="${cat.image}" style="width: 50px; height: 50px; object-fit: contain; background: #f8f9fa; border-radius: 8px; padding: 5px;">
+                <img src="${cat.image}" style="width: 50px; height: 50px; object-fit: contain; background: #ffffff; border-radius: 8px; padding: 5px;">
                 <div>
                     <h3 style="margin-bottom: 0.25rem;">${cat.name}</h3>
-                    <span style="color: var(--text-muted); font-size: 0.9rem;">ID: ${cat.id}</span>
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">المعرف: ${cat.id}</span>
                 </div>
             </div>
             <div class="order-actions" style="margin-top: auto;">
-                <button class="btn btn-accept edit-category-btn" data-id="${cat.id}" style="background: var(--primary);">Edit</button>
-                <button class="btn btn-reject delete-category-btn" data-id="${cat.id}">Delete</button>
+                <button class="btn btn-accept edit-category-btn" data-id="${cat.id}">تعديل الفئة</button>
+                <button class="btn btn-reject delete-category-btn" data-id="${cat.id}">حذف</button>
             </div>
         `;
     container.appendChild(card);
@@ -1122,15 +831,13 @@ function loadAdminCategories() {
   deleteBtns.forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const id = e.currentTarget.getAttribute("data-id");
-      if (typeof window.deleteCategory === "function")
-        window.deleteCategory(id);
+      if (typeof window.deleteCategory === "function") window.deleteCategory(id);
     });
   });
 }
 
 window.editCategory = function (id) {
   let categories = JSON.parse(localStorage.getItem("categories")) || [];
-  
   const cat = categories.find((c) => c.id === id);
   if (!cat) return;
 
@@ -1139,7 +846,8 @@ window.editCategory = function (id) {
   document.getElementById("edit-category-image").value = "";
 
   document.getElementById("add-category-form").style.display = "none";
-  document.getElementById("add-category-btn").innerText = "Add new category";
+  document.getElementById("add-category-btn").innerText = "إضافة فئة جديدة";
+  document.getElementById("add-category-btn").style.background = "var(--primary)";
 
   const editForm = document.getElementById("edit-category-form");
   editForm.style.display = "block";
@@ -1148,33 +856,25 @@ window.editCategory = function (id) {
 
 window.deleteCategory = function (id) {
   let categories = JSON.parse(localStorage.getItem("categories")) || [];
-
   const categoryToDelete = categories.find((c) => c.id === id);
   categories = categories.filter((c) => c.id !== id);
 
-  try {
-    localStorage.setItem("categories", JSON.stringify(categories));
-    if (categoryToDelete) {
-      syncItemToFirestore("categories", categoryToDelete, "delete");
-    }
-    loadAdminCategories();
-  } catch (e) {
-    alert("Exception error occurred running entity array slice logic!");
-  }
+  localStorage.setItem("categories", JSON.stringify(categories));
+  if (categoryToDelete) syncItemToFirestore("categories", categoryToDelete, "delete");
+  loadAdminCategories();
 };
 
 function initSettingsTab() {
   const deliveryCostInput = document.getElementById("delivery-cost-input");
   const saveDeliveryCostBtn = document.getElementById("save-delivery-cost-btn");
 
-  if (deliveryCostInput) {
-    deliveryCostInput.value = localStorage.getItem("deliveryCost") || "3000";
-  }
+  if (deliveryCostInput) deliveryCostInput.value = localStorage.getItem("deliveryCost") || "3000";
+  
   if (saveDeliveryCostBtn) {
     saveDeliveryCostBtn.addEventListener("click", () => {
       const cost = deliveryCostInput.value;
       localStorage.setItem("deliveryCost", cost);
-      alert("Shipping cost settings modified successfully!");
+      alert("تم تحديث إعدادات تكلفة الشحن بنجاح!");
     });
   }
 }
