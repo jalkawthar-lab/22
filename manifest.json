@@ -1,7 +1,7 @@
 {
   "name": "etsyShopIraq",
   "short_name": "etsyShopIraq",
-  "start_url": "/control-panel/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f0fdf4",
   "theme_color": "#ff6a00",
